@@ -20,7 +20,3 @@ export class DRACOLoader {
     setDrawMode(drawMode: TrianglesDrawModes): DRACOLoader;
     setSkipDequantization(attributeName: string, skip: boolean): DRACOLoader;
 }
-
-// Add static methods
-
-export as namespace THREE;
