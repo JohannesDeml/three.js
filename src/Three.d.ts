@@ -172,5 +172,7 @@ export * from './renderers/webgl/WebGLUniforms';
 export * from './renderers/webvr/WebVRManager';
 export * from './constants';
 export * from './Three.Legacy';
+
 export * from '../examples/js/loaders/GLTFLoader';
 export * from '../examples/js/loaders/DRACOLoader';
+export * from '../examples/js/postprocessing/SAOPass';
