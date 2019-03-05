@@ -156,3 +156,5 @@ export * from './Three.Legacy.js';
 export { GLTFLoader } from '../examples/js/loaders/GLTFLoader.js';
 export { DRACOLoader } from '../examples/js/loaders/DRACOLoader.js';
 export { SAOParams, SAOPass } from '../examples/js/postprocessing/SAOPass.js';
+export { SAOParams, SAOPass } from '../examples/js/postprocessing/EffectComposer.js';
+export { SAOParams, SAOPass } from '../examples/js/postprocessing/ShaderPass.js';

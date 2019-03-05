@@ -176,3 +176,5 @@ export * from './Three.Legacy';
 export * from '../examples/js/loaders/GLTFLoader';
 export * from '../examples/js/loaders/DRACOLoader';
 export * from '../examples/js/postprocessing/SAOPass';
+export * from '../examples/js/postprocessing/EffectComposer';
+export * from '../examples/js/postprocessing/ShaderPass';

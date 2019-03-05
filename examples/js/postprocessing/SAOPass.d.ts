@@ -10,7 +10,7 @@ import { Vector2 } from "../../../src/math/Vector2";
 import { Color } from "../../../src/math/Color";
 import { MeshDepthMaterial } from "../../../src/materials/MeshDepthMaterial";
 import { MeshNormalMaterial } from "../../../src/materials/MeshNormalMaterial";
-import { Renderer } from "../../../src/renderers/WebGLRenderTarget";
+import { Renderer } from "../../../src/renderers/WebGLRenderer";
 import { Material } from "../../../src/materials/Material";
 
 import { Pass } from "./EffectComposer";
