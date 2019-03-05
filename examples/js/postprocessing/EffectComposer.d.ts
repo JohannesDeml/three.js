@@ -1,8 +1,7 @@
-import { WebGLRenderTarget, WebGLRenderer } from "./three-core";
 import { ShaderPass } from "./three-shaderpass";
 
 import { WebGLRenderTarget } from "../../../src/renderers/WebGLRenderTarget";
-import { Renderer } from "../../../src/renderers/WebGLRenderer";
+import { WebGLRenderer } from "../../../src/renderers/WebGLRenderer";
 import { ShaderPass } from "./ShaderPass";
 
 export class EffectComposer {
