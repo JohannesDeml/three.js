@@ -1,5 +1,3 @@
-import { ShaderPass } from "./three-shaderpass";
-
 import { WebGLRenderTarget } from "../../../src/renderers/WebGLRenderTarget";
 import { WebGLRenderer } from "../../../src/renderers/WebGLRenderer";
 import { ShaderPass } from "./ShaderPass";
