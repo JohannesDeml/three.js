@@ -185,7 +185,7 @@
 
 	} );
 
-	var REVISION = '102';
+	var REVISION = '103dev';
 	var MOUSE = { LEFT: 0, MIDDLE: 1, RIGHT: 2 };
 	var CullFaceNone = 0;
 	var CullFaceBack = 1;
@@ -14750,6 +14750,18 @@
 
 			var background = scene.background;
 
+			// Ignore background in AR
+			// TODO: Reconsider this.
+
+			var vr = renderer.vr;
+			var session = vr.getSession && vr.getSession();
+
+			if ( session && session.environmentBlendMode === 'additive' ) {
+
+				background = null;
+
+			}
+
 			if ( background === null ) {
 
 				setClear( clearColor, clearAlpha );
@@ -15846,6 +15858,30 @@
 	} );
 
 	/**
+	 * @author Takahiro https://github.com/takahirox
+	 */
+
+	function DataTexture2DArray( data, width, height, depth ) {
+
+		Texture.call( this, null );
+
+		this.image = { data: data, width: width, height: height, depth: depth };
+
+		this.magFilter = NearestFilter;
+		this.minFilter = NearestFilter;
+
+		this.wrapR = ClampToEdgeWrapping;
+
+		this.generateMipmaps = false;
+		this.flipY = false;
+
+	}
+
+	DataTexture2DArray.prototype = Object.create( Texture.prototype );
+	DataTexture2DArray.prototype.constructor = DataTexture2DArray;
+	DataTexture2DArray.prototype.isDataTexture2DArray = true;
+
+	/**
 	 * @author Artur Trzesiok
 	 */
 
@@ -15929,6 +15965,7 @@
 	 */
 
 	var emptyTexture = new Texture();
+	var emptyTexture2dArray = new DataTexture2DArray();
 	var emptyTexture3d = new DataTexture3D();
 	var emptyCubeTexture = new CubeTexture();
 
@@ -16265,6 +16302,22 @@
 
 	}
 
+	function setValueT2DArray1( gl, v, renderer ) {
+
+		var cache = this.cache;
+		var unit = renderer.allocTextureUnit();
+
+		if ( cache[ 0 ] !== unit ) {
+
+			gl.uniform1i( this.addr, unit );
+			cache[ 0 ] = unit;
+
+		}
+
+		renderer.setTexture2DArray( v || emptyTexture2dArray, unit );
+
+	}
+
 	function setValueT3D1( gl, v, renderer ) {
 
 		var cache = this.cache;
@@ -16351,8 +16404,9 @@
 			case 0x8b5c: return setValue4fm; // _MAT4
 
 			case 0x8b5e: case 0x8d66: return setValueT1; // SAMPLER_2D, SAMPLER_EXTERNAL_OES
-			case 0x8B5F: return setValueT3D1; // SAMPLER_3D
+			case 0x8b5f: return setValueT3D1; // SAMPLER_3D
 			case 0x8b60: return setValueT6; // SAMPLER_CUBE
+			case 0x8DC1: return setValueT2DArray1; // SAMPLER_2D_ARRAY
 
 			case 0x1404: case 0x8b56: return setValue1i; // INT, BOOL
 			case 0x8b53: case 0x8b57: return setValue2iv; // _VEC2
@@ -20138,7 +20192,9 @@
 
 				// only perform resize for certain image types
 
-				if ( image instanceof ImageBitmap || image instanceof HTMLImageElement || image instanceof HTMLCanvasElement ) {
+				if ( ( typeof HTMLImageElement !== 'undefined' && image instanceof HTMLImageElement ) ||
+					( typeof HTMLCanvasElement !== 'undefined' && image instanceof HTMLCanvasElement ) ||
+					( typeof ImageBitmap !== 'undefined' && image instanceof ImageBitmap ) ) {
 
 					var floor = needsPowerOfTwo ? _Math.floorPowerOfTwo : Math.floor;
 
@@ -20393,6 +20449,22 @@
 
 		}
 
+		function setTexture2DArray( texture, slot ) {
+
+			var textureProperties = properties.get( texture );
+
+			if ( texture.version > 0 && textureProperties.__version !== texture.version ) {
+
+				uploadTexture( textureProperties, texture, slot );
+				return;
+
+			}
+
+			state.activeTexture( 33984 + slot );
+			state.bindTexture( 35866, textureProperties.__webglTexture );
+
+		}
+
 		function setTexture3D( texture, slot ) {
 
 			var textureProperties = properties.get( texture );
@@ -20545,7 +20617,7 @@
 				_gl.texParameteri( textureType, 10242, utils.convert( texture.wrapS ) );
 				_gl.texParameteri( textureType, 10243, utils.convert( texture.wrapT ) );
 
-				if ( textureType === 32879 ) {
+				if ( textureType === 32879 || textureType === 35866 ) {
 
 					_gl.texParameteri( textureType, 32882, utils.convert( texture.wrapR ) );
 
@@ -20559,7 +20631,7 @@
 				_gl.texParameteri( textureType, 10242, 33071 );
 				_gl.texParameteri( textureType, 10243, 33071 );
 
-				if ( textureType === 32879 ) {
+				if ( textureType === 32879 || textureType === 35866 ) {
 
 					_gl.texParameteri( textureType, 32882, 33071 );
 
@@ -20618,7 +20690,10 @@
 
 		function uploadTexture( textureProperties, texture, slot ) {
 
-			var textureType = ( texture.isDataTexture3D ) ? 32879 : 3553;
+			var textureType = 3553;
+
+			if ( texture.isDataTexture2DArray ) textureType = 35866;
+			if ( texture.isDataTexture3D ) textureType = 32879;
 
 			initTexture( textureProperties, texture );
 
@@ -20749,6 +20824,11 @@
 				}
 
 				textureProperties.__maxMipLevel = mipmaps.length - 1;
+
+			} else if ( texture.isDataTexture2DArray ) {
+
+				state.texImage3D( 35866, 0, glInternalFormat, image.width, image.height, image.depth, 0, glFormat, glType, image.data );
+				textureProperties.__maxMipLevel = 0;
 
 			} else if ( texture.isDataTexture3D ) {
 
@@ -21148,6 +21228,7 @@
 		}
 
 		this.setTexture2D = setTexture2D;
+		this.setTexture2DArray = setTexture2DArray;
 		this.setTexture3D = setTexture3D;
 		this.setTextureCube = setTextureCube;
 		this.setTextureCubeDynamic = setTextureCubeDynamic;
@@ -23661,7 +23742,11 @@
 						var geometry = objects.update( object );
 						var material = object.material;
 
-						currentRenderList.push( object, geometry, material, groupOrder, _vector3.z, null );
+						if ( material.visible ) {
+
+							currentRenderList.push( object, geometry, material, groupOrder, _vector3.z, null );
+
+						}
 
 					}
 
@@ -24847,16 +24932,17 @@
 
 		}() );
 
-		this.setTexture3D = ( function () {
+		this.setTexture2DArray = function ( texture, slot ) {
 
-			// backwards compatibility: peel texture.texture
-			return function setTexture3D( texture, slot ) {
+			textures.setTexture2DArray( texture, slot );
 
-				textures.setTexture3D( texture, slot );
+		};
 
-			};
+		this.setTexture3D = function ( texture, slot ) {
 
-		}() );
+			textures.setTexture3D( texture, slot );
+
+		};
 
 		this.setTexture = ( function () {
 
@@ -24991,7 +25077,7 @@
 			if ( isCube ) {
 
 				var textureProperties = properties.get( renderTarget.texture );
-				_gl.framebufferTexture2D( 36160, 36064, 34069 + activeCubeFace || 0, textureProperties.__webglTexture, activeMipMapLevel || 0 );
+				_gl.framebufferTexture2D( 36160, 36064, 34069 + ( activeCubeFace || 0 ), textureProperties.__webglTexture, activeMipMapLevel || 0 );
 
 			}
 
@@ -39100,7 +39186,16 @@
 
 			} ).then( function ( blob ) {
 
-				return createImageBitmap( blob, scope.options );
+				if ( scope.options === undefined ) {
+
+					// Workaround for FireFox. It causes an error if you pass options.
+					return createImageBitmap( blob );
+
+				} else {
+
+					return createImageBitmap( blob, scope.options );
+
+				}
 
 			} ).then( function ( imageBitmap ) {
 
@@ -47969,6 +48064,7 @@
 	exports.Group = Group;
 	exports.VideoTexture = VideoTexture;
 	exports.DataTexture = DataTexture;
+	exports.DataTexture2DArray = DataTexture2DArray;
 	exports.DataTexture3D = DataTexture3D;
 	exports.CompressedTexture = CompressedTexture;
 	exports.CubeTexture = CubeTexture;
