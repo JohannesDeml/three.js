@@ -1,9 +1,9 @@
 {
-  "name": "three",
+  "name": "three-og",
   "version": "0.106.1",
-  "description": "JavaScript 3D library",
+  "description": "JavaScript 3D library for online gallery",
   "main": "build/three.js",
-  "repository": "mrdoob/three.js",
+  "repository": "johannesdeml/three.js",
   "jsnext:main": "build/three.module.js",
   "module": "build/three.module.js",
   "types": "src/Three.d.ts",
@@ -60,10 +60,10 @@
     "3d",
     "webgl"
   ],
-  "author": "mrdoob",
+  "author": "johannesdeml",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/mrdoob/three.js/issues"
+    "url": "https://github.com/johannesdeml/three.js/issues"
   },
   "homepage": "https://threejs.org/",
   "devDependencies": {
