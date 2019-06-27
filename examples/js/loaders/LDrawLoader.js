@@ -1,6 +1,7 @@
 /**
  * @author mrdoob / http://mrdoob.com/
  * @author yomboprime / https://github.com/yomboprime/
+ * @author gkjohnson / https://github.com/gkjohnson/
  *
  *
  */
@@ -683,6 +684,9 @@ THREE.LDrawLoader = ( function () {
 				triangles: null,
 				lineSegments: null,
 				conditionalSegments: null,
+
+				// If true, this object is the start of a construction step
+				startingConstructionStep: false
 			};
 
 			this.parseScopesStack.push( newParseScope );
@@ -1041,11 +1045,11 @@ THREE.LDrawLoader = ( function () {
 			// Retrieve data from the parent parse scope
 			var parentParseScope = this.getParentParseScope();
 
+			var isRoot = ! parentParseScope.isFromParse;
+
 			// Main colour codes passed to this subobject (or default codes 16 and 24 if it is the root object)
 			var mainColourCode = parentParseScope.mainColourCode;
 			var mainEdgeColourCode = parentParseScope.mainEdgeColourCode;
-
-			var url = parentParseScope.url;
 
 			var currentParseScope = this.getCurrentParseScope();
 
@@ -1079,6 +1083,8 @@ THREE.LDrawLoader = ( function () {
 			var bfcInverted = false;
 			var bfcCull = true;
 			var type = '';
+
+			var startingConstructionStep = false;
 
 			var scope = this;
 			function parseColourCode( lineParser, forEdge ) {
@@ -1193,6 +1199,8 @@ THREE.LDrawLoader = ( function () {
 										if ( isRoot || scope.separateObjects && ! isPrimitiveType( type ) ) {
 
 											currentParseScope.groupObject = new THREE.Group();
+
+											currentParseScope.groupObject.userData.startingConstructionStep = currentParseScope.startingConstructionStep;
 
 										}
 
@@ -1321,6 +1329,12 @@ THREE.LDrawLoader = ( function () {
 
 									break;
 
+								case 'STEP':
+
+									startingConstructionStep = true;
+
+									break;
+
 								default:
 									// Other meta directives are not implemented
 									break;
@@ -1356,7 +1370,7 @@ THREE.LDrawLoader = ( function () {
 							0, 0, 0, 1
 						);
 
-						var fileName = lp.getRemainingString().trim().replace( "\\", "/" );
+						var fileName = lp.getRemainingString().trim().replace( /\\/g, "/" );
 
 						if ( scope.fileMap[ fileName ] ) {
 
@@ -1386,7 +1400,8 @@ THREE.LDrawLoader = ( function () {
 							locationState: LDrawLoader.FILE_LOCATION_AS_IS,
 							url: null,
 							triedLowerCase: false,
-							inverted: bfcInverted !== currentParseScope.inverted
+							inverted: bfcInverted !== currentParseScope.inverted,
+							startingConstructionStep: startingConstructionStep
 						} );
 
 						bfcInverted = false;
@@ -1595,6 +1610,32 @@ THREE.LDrawLoader = ( function () {
 
 		},
 
+		computeConstructionSteps: function ( model ) {
+
+			// Sets userdata.constructionStep number in Group objects and userData.numConstructionSteps number in the root Group object.
+
+			var stepNumber = 0;
+
+			model.traverse( c => {
+
+				if ( c.isGroup ) {
+
+					if ( c.userData.startingConstructionStep ) {
+
+						stepNumber ++;
+
+					}
+
+					c.userData.constructionStep = stepNumber;
+
+				}
+
+			} );
+
+			model.userData.numConstructionSteps = stepNumber + 1;
+
+		},
+
 		processObject: function ( text, onProcessed, subobject, url ) {
 
 			var scope = this;
@@ -1610,6 +1651,7 @@ THREE.LDrawLoader = ( function () {
 				parseScope.currentMatrix.multiplyMatrices( parentParseScope.currentMatrix, subobject.matrix );
 				parseScope.matrix.copy( subobject.matrix );
 				parseScope.inverted = subobject.inverted;
+				parseScope.startingConstructionStep = subobject.startingConstructionStep;
 
 			}
 
@@ -1763,6 +1805,13 @@ THREE.LDrawLoader = ( function () {
 				}
 
 				scope.removeScopeLevel();
+
+				// If it is root object, compute construction steps
+				if ( ! parentParseScope.isFromParse ) {
+
+					scope.computeConstructionSteps( parseScope.groupObject );
+
+				}
 
 				if ( onProcessed ) {
 
