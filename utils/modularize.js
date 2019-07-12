@@ -24,7 +24,6 @@ var files = [
 	{ path: 'controls/FirstPersonControls.js', dependencies: [], ignoreList: [] },
 	{ path: 'controls/FlyControls.js', dependencies: [], ignoreList: [] },
 	{ path: 'controls/OrbitControls.js', dependencies: [], ignoreList: [] },
-	{ path: 'controls/MapControls.js', dependencies: [], ignoreList: [] },
 	{ path: 'controls/OrthographicTrackballControls.js', dependencies: [], ignoreList: [] },
 	{ path: 'controls/PointerLockControls.js', dependencies: [], ignoreList: [] },
 	{ path: 'controls/TrackballControls.js', dependencies: [], ignoreList: [] },
@@ -255,6 +254,9 @@ var files = [
 	{ path: 'vr/deprecated/GearVRController.js', dependencies: [], ignoreList: [] },
 	{ path: 'vr/PaintViveController.js', dependencies: [ { name: 'ViveController', path: 'vr/ViveController.js' } ], ignoreList: [] },
 	{ path: 'vr/ViveController.js', dependencies: [], ignoreList: [] },
+	{ path: 'vr/WebVR.js', dependencies: [], ignoreList: [] },
+
+	{ path: 'WebGL.js', dependencies: [], ignoreList: [] },
 ];
 
 for ( var i = 0; i < files.length; i ++ ) {
