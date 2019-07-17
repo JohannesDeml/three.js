@@ -10,7 +10,9 @@ three.js
 
 #### JavaScript 3D library ####
 
-The aim of the project is to create an easy to use, lightweight, 3D library with a default WebGL renderer. The library also provides Canvas 2D, SVG and CSS3D renderers in the examples.
+`npm install three-og`
+Fork of [three.js](https://github.com/mrdoob/three.js) with faster update cycles to allow for bleeding edge development. This library is used for an online gallery project built on typescript.
+Import via `import { ClassName } from "three-og";`
 
 [Examples](http://threejs.org/examples/) &mdash;
 [Documentation](http://threejs.org/docs/) &mdash;
@@ -77,10 +79,10 @@ If everything went well you should see [this](https://jsfiddle.net/f2Lommf5/).
 [Releases](https://github.com/mrdoob/three.js/releases)
 
 
-[npm]: https://img.shields.io/npm/v/three.svg
-[npm-url]: https://www.npmjs.com/package/three
-[build-size]: https://badgen.net/bundlephobia/minzip/three
-[build-size-url]: https://bundlephobia.com/result?p=three
+[npm]: https://img.shields.io/npm/v/three-og.svg
+[npm-url]: https://www.npmjs.com/package/three-og
+[build-size]: https://badgen.net/bundlephobia/minzip/three-og
+[build-size-url]: https://bundlephobia.com/result?p=three-og
 [build-status]: https://travis-ci.org/mrdoob/three.js.svg?branch=dev
 [build-status-url]: https://travis-ci.org/mrdoob/three.js
 [dependencies]: https://img.shields.io/david/mrdoob/three.js.svg
