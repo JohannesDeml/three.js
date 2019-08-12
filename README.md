@@ -21,7 +21,7 @@ Import via `import { ClassName } from "three-og";`
 [Questions](http://stackoverflow.com/questions/tagged/three.js) &mdash;
 [Forum](https://discourse.threejs.org/) &mdash;
 [Gitter](https://gitter.im/mrdoob/three.js) &mdash;
-[Slack](https://threejs-slack.herokuapp.com/)
+[Slack](https://join.slack.com/t/threejs/shared_invite/enQtMzYxMzczODM2OTgxLTQ1YmY4YTQxOTFjNDAzYmQ4NjU2YzRhNzliY2RiNDEyYjU2MjhhODgyYWQ5Y2MyZTU3MWNkOGVmOGRhOTQzYTk)
 
 ### Usage ###
 
