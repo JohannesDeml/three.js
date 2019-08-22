@@ -1,6 +1,6 @@
 {
   "name": "three-og",
-  "version": "0.107.4",
+  "version": "0.107.5",
   "description": "JavaScript 3D library for online gallery",
   "main": "build/three.js",
   "repository": "johannesdeml/three.js",
