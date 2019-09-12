@@ -1,4 +1,5 @@
 import './polyfills.js';
+import { REVISION } from './constants.js';
 
 export { WebGLMultisampleRenderTarget } from './renderers/WebGLMultisampleRenderTarget.js';
 export { WebGLRenderTargetCube } from './renderers/WebGLRenderTargetCube.js';
@@ -159,9 +160,12 @@ export { WebGLUtils } from './renderers/webgl/WebGLUtils.js';
 export * from './constants.js';
 export * from './Three.Legacy.js';
 
-export { GLTFLoader } from '../examples/js/loaders/GLTFLoader.js';
-export { DRACOLoader } from '../examples/js/loaders/DRACOLoader.js';
-export { SAOParams, SAOPass } from '../examples/js/postprocessing/SAOPass.js';
-export { SAOParams, SAOPass } from '../examples/js/postprocessing/EffectComposer.js';
-export { SAOParams, SAOPass } from '../examples/js/postprocessing/ShaderPass.js';
-export { SAOParams, SAOPass } from '../examples/js/postprocessing/RenderPass.js';
+if ( typeof __THREE_DEVTOOLS__ !== 'undefined' ) {
+
+	/* eslint-disable no-undef */
+	__THREE_DEVTOOLS__.dispatchEvent( new CustomEvent( 'register', { detail: {
+		revision: REVISION,
+	} } ) );
+	/* eslint-enable no-undef */
+
+}

@@ -354,6 +354,8 @@ var list = {
 			},
 
 			"Controls": {
+				"DeviceOrientationControls": "examples/en/controls/DeviceOrientationControls",
+				"DragControls": "examples/en/controls/DragControls",
 				"OrbitControls": "examples/en/controls/OrbitControls"
 			},
 
@@ -372,12 +374,11 @@ var list = {
 				"MTLLoader": "examples/en/loaders/MTLLoader",
 				"OBJLoader": "examples/en/loaders/OBJLoader",
 				"OBJLoader2": "examples/en/loaders/OBJLoader2",
-				"LoaderSupport": "examples/en/loaders/LoaderSupport",
 				"PCDLoader": "examples/en/loaders/PCDLoader",
 				"PDBLoader": "examples/en/loaders/PDBLoader",
+				"PRWMLoader": "examples/en/loaders/PRWMLoader",
 				"SVGLoader": "examples/en/loaders/SVGLoader",
-				"TGALoader": "examples/en/loaders/TGALoader",
-				"PRWMLoader": "examples/en/loaders/PRWMLoader"
+				"TGALoader": "examples/en/loaders/TGALoader"
 			},
 
 			"Objects": {
@@ -654,8 +655,9 @@ var list = {
 			},
 
 			"灯光 / 阴影": {
-				"DirectionalLightShadow": "api/zh/lights/shadows/DirectionalLightShadow",
 				"LightShadow": "api/zh/lights/shadows/LightShadow",
+				"PointLightShadow": "api/zh/lights/shadows/PointLightShadow",
+				"DirectionalLightShadow": "api/zh/lights/shadows/DirectionalLightShadow",
 				"SpotLightShadow": "api/zh/lights/shadows/SpotLightShadow"
 			},
 
@@ -790,6 +792,8 @@ var list = {
 			},
 
 			"控制": {
+				"DeviceOrientationControls": "examples/zh/controls/DeviceOrientationControls",
+				"DragControls": "examples/zh/controls/DragControls",
 				"OrbitControls": "examples/zh/controls/OrbitControls"
 			},
 
@@ -801,30 +805,32 @@ var list = {
 
 			"加载器": {
 				"BabylonLoader": "examples/zh/loaders/BabylonLoader",
+				"BasisTextureLoader": "examples/zh/loaders/BasisTextureLoader",
+				"DRACOLoader": "examples/zh/loaders/DRACOLoader",
 				"GLTFLoader": "examples/zh/loaders/GLTFLoader",
 				"MMDLoader": "examples/zh/loaders/MMDLoader",
 				"MTLLoader": "examples/zh/loaders/MTLLoader",
 				"OBJLoader": "examples/zh/loaders/OBJLoader",
 				"OBJLoader2": "examples/zh/loaders/OBJLoader2",
-				"LoaderSupport": "examples/zh/loaders/LoaderSupport",
 				"PCDLoader": "examples/zh/loaders/PCDLoader",
 				"PDBLoader": "examples/zh/loaders/PDBLoader",
+				"PRWMLoader": "examples/zh/loaders/PRWMLoader",
 				"SVGLoader": "examples/zh/loaders/SVGLoader",
-				"TGALoader": "examples/zh/loaders/TGALoader",
-				"PRWMLoader": "examples/zh/loaders/PRWMLoader"
+				"TGALoader": "examples/zh/loaders/TGALoader"
 			},
 
 			"物体": {
 				"Lensflare": "examples/zh/objects/Lensflare",
 			},
 
-			"Post-Processing": {
+			"后期处理": {
 				"EffectComposer": "examples/zh/postprocessing/EffectComposer"
 			},
 
 			"导出器": {
 				"GLTFExporter": "examples/zh/exporters/GLTFExporter",
-				"PLYExporter": "examples/zh/exporters/PLYExporter"
+				"PLYExporter": "examples/zh/exporters/PLYExporter",
+				"ColladaExporter": "examples/zh/exporters/ColladaExporter"
 			},
 
 			"插件": {
@@ -843,12 +849,12 @@ var list = {
 				"CSS2DRenderer": "examples/zh/renderers/CSS2DRenderer",
 				"CSS3DRenderer": "examples/zh/renderers/CSS3DRenderer",
 				"SVGRenderer": "examples/zh/renderers/SVGRenderer"
-
 			},
 
 			"实用工具": {
 				"BufferGeometryUtils": "examples/zh/utils/BufferGeometryUtils",
-				"SceneUtils": "examples/zh/utils/SceneUtils"
+				"SceneUtils": "examples/zh/utils/SceneUtils",
+				"SkeletonUtils": "examples/zh/utils/SkeletonUtils"
 			}
 
 		},
