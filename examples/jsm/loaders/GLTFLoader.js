@@ -248,6 +248,10 @@ var GLTFLoader = ( function () {
 							extensions[ EXTENSIONS.MSFT_TEXTURE_DDS ] = new GLTFTextureDDSExtension( this.ddsLoader );
 							break;
 
+						case EXTENSIONS.GOOGLE_TEXTURE_BASIS:
+							extensions[ EXTENSIONS.GOOGLE_TEXTURE_BASIS ] = new GLTFTextureBasisExtension();
+							break;
+
 						case EXTENSIONS.KHR_TEXTURE_TRANSFORM:
 							extensions[ EXTENSIONS.KHR_TEXTURE_TRANSFORM ] = new GLTFTextureTransformExtension();
 							break;
@@ -327,7 +331,8 @@ var GLTFLoader = ( function () {
 		KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS: 'KHR_materials_pbrSpecularGlossiness',
 		KHR_MATERIALS_UNLIT: 'KHR_materials_unlit',
 		KHR_TEXTURE_TRANSFORM: 'KHR_texture_transform',
-		MSFT_TEXTURE_DDS: 'MSFT_texture_dds'
+		MSFT_TEXTURE_DDS: 'MSFT_texture_dds',
+		GOOGLE_TEXTURE_BASIS: 'GOOGLE_texture_basis'
 	};
 
 	/**
@@ -346,6 +351,16 @@ var GLTFLoader = ( function () {
 
 		this.name = EXTENSIONS.MSFT_TEXTURE_DDS;
 		this.ddsLoader = ddsLoader;
+
+	}
+
+	/**
+	 * Basis Texture Extension
+	 *
+	 */
+	function GLTFTextureBasisExtension() {
+
+		this.name = EXTENSIONS.GOOGLE_TEXTURE_BASIS;
 
 	}
 
@@ -2020,6 +2035,10 @@ var GLTFLoader = ( function () {
 		if ( textureExtensions[ EXTENSIONS.MSFT_TEXTURE_DDS ] ) {
 
 			source = json.images[ textureExtensions[ EXTENSIONS.MSFT_TEXTURE_DDS ].source ];
+
+		} else if ( textureExtensions[ EXTENSIONS.GOOGLE_TEXTURE_BASIS ] ) {
+
+			source = json.images[ textureExtensions[ EXTENSIONS.GOOGLE_TEXTURE_BASIS ].source ];
 
 		} else {
 

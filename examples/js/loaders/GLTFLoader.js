@@ -6,6 +6,12 @@
  * @author Don McCurdy / https://www.donmccurdy.com
  */
 
+ /**
+ * A modified version of THREE.GLTFLoader, with support for the (hypothetical)
+ * GOOGLE_texture_basis extension. This extension is defined for the sake of
+ * example only – the glTF format will officially reference Basis files within
+ * a KTX2 wrapper.
+ */
 THREE.GLTFLoader = ( function () {
 
 	function GLTFLoader( manager ) {
@@ -184,6 +190,10 @@ THREE.GLTFLoader = ( function () {
 							extensions[ EXTENSIONS.MSFT_TEXTURE_DDS ] = new GLTFTextureDDSExtension( this.ddsLoader );
 							break;
 
+						case EXTENSIONS.GOOGLE_TEXTURE_BASIS:
+							extensions[ EXTENSIONS.GOOGLE_TEXTURE_BASIS ] = new GLTFTextureBasisExtension();
+							break;
+
 						case EXTENSIONS.KHR_TEXTURE_TRANSFORM:
 							extensions[ EXTENSIONS.KHR_TEXTURE_TRANSFORM ] = new GLTFTextureTransformExtension();
 							break;
@@ -263,7 +273,8 @@ THREE.GLTFLoader = ( function () {
 		KHR_MATERIALS_PBR_SPECULAR_GLOSSINESS: 'KHR_materials_pbrSpecularGlossiness',
 		KHR_MATERIALS_UNLIT: 'KHR_materials_unlit',
 		KHR_TEXTURE_TRANSFORM: 'KHR_texture_transform',
-		MSFT_TEXTURE_DDS: 'MSFT_texture_dds'
+		MSFT_TEXTURE_DDS: 'MSFT_texture_dds',
+		GOOGLE_TEXTURE_BASIS: 'GOOGLE_texture_basis'
 	};
 
 	/**
@@ -286,7 +297,17 @@ THREE.GLTFLoader = ( function () {
 	}
 
 	/**
-	 * Punctual Lights Extension
+	 * Basis Texture Extension
+	 *
+	 */
+	function GLTFTextureBasisExtension() {
+
+		this.name = EXTENSIONS.GOOGLE_TEXTURE_BASIS;
+
+	}
+
+	/**
+	 * Lights Extension
 	 *
 	 * Specification: https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Khronos/KHR_lights_punctual
 	 */
@@ -1956,6 +1977,10 @@ THREE.GLTFLoader = ( function () {
 		if ( textureExtensions[ EXTENSIONS.MSFT_TEXTURE_DDS ] ) {
 
 			source = json.images[ textureExtensions[ EXTENSIONS.MSFT_TEXTURE_DDS ].source ];
+
+		} else if ( textureExtensions[ EXTENSIONS.GOOGLE_TEXTURE_BASIS ] ) {
+
+			source = json.images[ textureExtensions[ EXTENSIONS.GOOGLE_TEXTURE_BASIS ].source ];
 
 		} else {
 
