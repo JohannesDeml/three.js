@@ -1,6 +1,6 @@
 {
   "name": "three-og",
-  "version": "0.109.0",
+  "version": "0.109.1",
   "description": "JavaScript 3D library for online gallery",
   "main": "build/three.js",
   "jsnext:main": "build/three.module.js",
