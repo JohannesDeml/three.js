@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>three.js webgl - glTF loader with basis texture</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<link type="text/css" rel="stylesheet" href="main.css">
+	</head>
+
+	<body>
+		<div id="info">
+			<a href="http://threejs.org" target="_blank" rel="noopener">three.js</a> - GLTFLoader with basis texture<br />
+			<a href="https://github.com/binomialLLC/basis_universal" target="_blank">Basis Universal GPU Texture Codec</a>
+		</div>
+
+		<script type="module">
+
+			import * as THREE from '../build/three.module.js';
+
+			import Stats from './jsm/libs/stats.module.js';
+
+			import { OrbitControls } from './jsm/controls/OrbitControls.js';
+			import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
+			import { BasisTextureLoader } from './jsm/loaders/BasisTextureLoader.js';
+			import { RGBELoader } from './jsm/loaders/RGBELoader.js';
+			import { EquirectangularToCubeGenerator } from './jsm/loaders/EquirectangularToCubeGenerator.js';
+			import { PMREMGenerator } from './jsm/pmrem/PMREMGenerator.js';
+			import { PMREMCubeUVPacker } from './jsm/pmrem/PMREMCubeUVPacker.js';
+
+			var container, stats, controls;
+			var camera, scene, renderer;
+
+			init();
+			animate();
+
+			function init() {
+
+				container = document.createElement( 'div' );
+				document.body.appendChild( container );
+
+				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.25, 20 );
+				camera.position.set( - 1.8, 0.9, 2.7 );
+
+				scene = new THREE.Scene();
+
+				renderer = new THREE.WebGLRenderer( { antialias: true } );
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.gammaOutput = true;
+				container.appendChild( renderer.domElement );
+
+				new RGBELoader()
+					.setDataType( THREE.UnsignedByteType )
+					.setPath( 'textures/equirectangular/' )
+					.load( 'pedestrian_overpass_2k.hdr', function ( texture ) {
+
+						var cubeGenerator = new EquirectangularToCubeGenerator( texture, { resolution: 1024 } );
+						cubeGenerator.update( renderer );
+
+						var pmremGenerator = new PMREMGenerator( cubeGenerator.renderTarget.texture );
+						pmremGenerator.update( renderer );
+
+						var pmremCubeUVPacker = new PMREMCubeUVPacker( pmremGenerator.cubeLods );
+						pmremCubeUVPacker.update( renderer );
+
+						var envMap = pmremCubeUVPacker.CubeUVRenderTarget.texture;
+
+						// basis loader
+
+						var basisLoader = new BasisTextureLoader();
+						basisLoader.setTranscoderPath( 'js/libs/basis/' );
+						basisLoader.detectSupport( renderer );
+						THREE.DefaultLoadingManager.addHandler( /\.basis$/, basisLoader );
+
+						// model
+
+						var loader = new GLTFLoader().setPath( 'models/gltf/BasisBlock/glTF-basis/' );
+						loader.load( 'BasisBlock.gltf', function ( gltf ) {
+
+							gltf.scene.traverse( function ( child ) {
+
+								if ( child.isMesh ) {
+
+									child.material.envMap = envMap;
+									console.log(child.material.map);
+
+								}
+
+							} );
+
+							scene.add( gltf.scene );
+
+						} );
+
+						// Cube
+						var geometry = new THREE.BoxBufferGeometry( 1, 1, 1 );
+						var material = new THREE.MeshStandardMaterial();
+
+						var mesh = new THREE.Mesh( geometry, material );
+
+						scene.add( mesh );
+						mesh.position.set(0,0,-2);
+
+						basisLoader.load( 'textures/compressed/PavingStones.basis', function ( texture ) {
+
+							texture.encoding = THREE.sRGBEncoding;
+							material.map = texture;
+							material.envMap = envMap;
+							material.needsUpdate = true;
+							console.log(material.map);
+
+						}, undefined, function ( error ) {
+
+							console.error( error );
+
+						} );
+
+						pmremGenerator.dispose();
+						pmremCubeUVPacker.dispose();
+
+						scene.background = cubeGenerator.renderTarget;
+
+					} );
+
+				controls = new OrbitControls( camera, renderer.domElement );
+				controls.target.set( 0, - 0.2, - 0.2 );
+				controls.update();
+
+				window.addEventListener( 'resize', onWindowResize, false );
+
+				// stats
+				stats = new Stats();
+				container.appendChild( stats.dom );
+
+			}
+
+			function onWindowResize() {
+
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+			}
+
+			//
+
+			function animate() {
+
+				requestAnimationFrame( animate );
+
+				renderer.render( scene, camera );
+
+				stats.update();
+
+			}
+
+		</script>
+
+	</body>
+</html>
