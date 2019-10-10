@@ -309,7 +309,7 @@ function WebGLRenderer( parameters ) {
 
 	// vr
 
-	var vr = ( typeof navigator !== 'undefined' && 'xr' in navigator && 'supportsSession' in navigator.xr ) ? new WebXRManager( _this, _gl ) : new WebVRManager( _this );
+	var vr = ( typeof navigator !== 'undefined' && 'xr' in navigator && 'isSessionSupported' in navigator.xr ) ? new WebXRManager( _this, _gl ) : new WebVRManager( _this );
 
 	this.vr = vr;
 
@@ -2202,17 +2202,44 @@ function WebGLRenderer( parameters ) {
 		uniforms.diffuse.value.copy( material.color );
 		uniforms.opacity.value = material.opacity;
 		uniforms.rotation.value = material.rotation;
-		uniforms.map.value = material.map;
 
-		if ( material.map !== null ) {
+		if ( material.map ) {
 
-			if ( material.map.matrixAutoUpdate === true ) {
+			uniforms.map.value = material.map;
 
-				material.map.updateMatrix();
+		}
+
+		if ( material.alphaMap ) {
+
+			uniforms.alphaMap.value = material.alphaMap;
+
+		}
+
+		// uv repeat and offset setting priorities
+		// 1. color map
+		// 2. alpha map
+
+		var uvScaleMap;
+
+		if ( material.map ) {
+
+			uvScaleMap = material.map;
+
+		} else if ( material.alphaMap ) {
+
+			uvScaleMap = material.alphaMap;
+
+		}
+
+		if ( uvScaleMap !== undefined ) {
+
+			if ( uvScaleMap.matrixAutoUpdate === true ) {
+
+				uvScaleMap.updateMatrix();
 
 			}
 
-			uniforms.uvTransform.value.copy( material.map.matrix );
+			uniforms.uvTransform.value.copy( uvScaleMap.matrix );
 
 		}
 

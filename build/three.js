@@ -14276,7 +14276,7 @@
 
 	var shadow_vert = "#include <fog_pars_vertex>\n#include <shadowmap_pars_vertex>\nvoid main() {\n\t#include <begin_vertex>\n\t#include <project_vertex>\n\t#include <worldpos_vertex>\n\t#include <shadowmap_vertex>\n\t#include <fog_vertex>\n}";
 
-	var sprite_frag = "uniform vec3 diffuse;\nuniform float opacity;\n#include <common>\n#include <uv_pars_fragment>\n#include <map_pars_fragment>\n#include <fog_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\nvoid main() {\n\t#include <clipping_planes_fragment>\n\tvec3 outgoingLight = vec3( 0.0 );\n\tvec4 diffuseColor = vec4( diffuse, opacity );\n\t#include <logdepthbuf_fragment>\n\t#include <map_fragment>\n\t#include <alphatest_fragment>\n\toutgoingLight = diffuseColor.rgb;\n\tgl_FragColor = vec4( outgoingLight, diffuseColor.a );\n\t#include <tonemapping_fragment>\n\t#include <encodings_fragment>\n\t#include <fog_fragment>\n}";
+	var sprite_frag = "uniform vec3 diffuse;\nuniform float opacity;\n#include <common>\n#include <uv_pars_fragment>\n#include <map_pars_fragment>\n#include <alphamap_pars_fragment>\n#include <fog_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\nvoid main() {\n\t#include <clipping_planes_fragment>\n\tvec3 outgoingLight = vec3( 0.0 );\n\tvec4 diffuseColor = vec4( diffuse, opacity );\n\t#include <logdepthbuf_fragment>\n\t#include <map_fragment>\n\t#include <alphamap_fragment>\n\t#include <alphatest_fragment>\n\toutgoingLight = diffuseColor.rgb;\n\tgl_FragColor = vec4( outgoingLight, diffuseColor.a );\n\t#include <tonemapping_fragment>\n\t#include <encodings_fragment>\n\t#include <fog_fragment>\n}";
 
 	var sprite_vert = "uniform float rotation;\nuniform vec2 center;\n#include <common>\n#include <uv_pars_vertex>\n#include <fog_pars_vertex>\n#include <logdepthbuf_pars_vertex>\n#include <clipping_planes_pars_vertex>\nvoid main() {\n\t#include <uv_vertex>\n\tvec4 mvPosition = modelViewMatrix * vec4( 0.0, 0.0, 0.0, 1.0 );\n\tvec2 scale;\n\tscale.x = length( vec3( modelMatrix[ 0 ].x, modelMatrix[ 0 ].y, modelMatrix[ 0 ].z ) );\n\tscale.y = length( vec3( modelMatrix[ 1 ].x, modelMatrix[ 1 ].y, modelMatrix[ 1 ].z ) );\n\t#ifndef USE_SIZEATTENUATION\n\t\tbool isPerspective = isPerspectiveMatrix( projectionMatrix );\n\t\tif ( isPerspective ) scale *= - mvPosition.z;\n\t#endif\n\tvec2 alignedPosition = ( position.xy - ( center - vec2( 0.5 ) ) ) * scale;\n\tvec2 rotatedPosition;\n\trotatedPosition.x = cos( rotation ) * alignedPosition.x - sin( rotation ) * alignedPosition.y;\n\trotatedPosition.y = sin( rotation ) * alignedPosition.x + cos( rotation ) * alignedPosition.y;\n\tmvPosition.xy += rotatedPosition;\n\tgl_Position = projectionMatrix * mvPosition;\n\t#include <logdepthbuf_vertex>\n\t#include <clipping_planes_vertex>\n\t#include <fog_vertex>\n}";
 
@@ -14598,6 +14598,7 @@
 			center: { value: new Vector2( 0.5, 0.5 ) },
 			rotation: { value: 0.0 },
 			map: { value: null },
+			alphaMap: { value: null },
 			uvTransform: { value: new Matrix3() }
 
 		}
@@ -19471,13 +19472,8 @@
 
 			_viewport = new Vector4(),
 
-			_MorphingFlag = 1,
-			_SkinningFlag = 2,
-
-			_NumberOfMaterialVariants = ( _MorphingFlag | _SkinningFlag ) + 1,
-
-			_depthMaterials = new Array( _NumberOfMaterialVariants ),
-			_distanceMaterials = new Array( _NumberOfMaterialVariants ),
+			_depthMaterials = [],
+			_distanceMaterials = [],
 
 			_materialCache = {};
 
@@ -19515,35 +19511,6 @@
 		);
 
 		var fullScreenMesh = new Mesh( fullScreenTri, shadowMaterialVertical );
-
-		// init
-
-		for ( var i = 0; i !== _NumberOfMaterialVariants; ++ i ) {
-
-			var useMorphing = ( i & _MorphingFlag ) !== 0;
-			var useSkinning = ( i & _SkinningFlag ) !== 0;
-
-			var depthMaterial = new MeshDepthMaterial( {
-
-				depthPacking: RGBADepthPacking,
-
-				morphTargets: useMorphing,
-				skinning: useSkinning
-
-			} );
-
-			_depthMaterials[ i ] = depthMaterial;
-
-			var distanceMaterial = new MeshDistanceMaterial( {
-
-				morphTargets: useMorphing,
-				skinning: useSkinning
-
-			} );
-
-			_distanceMaterials[ i ] = distanceMaterial;
-
-		}
 
 		var scope = this;
 
@@ -19707,33 +19674,81 @@
 
 		}
 
+		function getDepthMaterialVariant( useMorphing, useSkinning, useInstancing ) {
+
+			var index = useMorphing << 0 | useSkinning << 1 | useInstancing << 2;
+
+			var material = _depthMaterials[ index ];
+
+			if ( material === undefined ) {
+
+				material = new MeshDepthMaterial( {
+
+					depthPacking: RGBADepthPacking,
+
+					morphTargets: useMorphing,
+					skinning: useSkinning
+
+				} );
+
+				_depthMaterials[ index ] = material;
+
+			}
+
+			return material;
+
+		}
+
+		function getDistanceMaterialVariant( useMorphing, useSkinning, useInstancing ) {
+
+			var index = useMorphing << 0 | useSkinning << 1 | useInstancing << 2;
+
+			var material = _distanceMaterials[ index ];
+
+			if ( material === undefined ) {
+
+				material = new MeshDistanceMaterial( {
+
+					morphTargets: useMorphing,
+					skinning: useSkinning
+
+				} );
+
+				_distanceMaterials[ index ] = material;
+
+			}
+
+			return material;
+
+		}
+
 		function getDepthMaterial( object, material, light, shadowCameraNear, shadowCameraFar, type ) {
 
 			var geometry = object.geometry;
 
 			var result = null;
 
-			var materialVariants = _depthMaterials;
+			var getMaterialVariant = getDepthMaterialVariant;
 			var customMaterial = object.customDepthMaterial;
 
-			if ( light.isPointLight ) {
+			if ( light.isPointLight === true ) {
 
-				materialVariants = _distanceMaterials;
+				getMaterialVariant = getDistanceMaterialVariant;
 				customMaterial = object.customDistanceMaterial;
 
 			}
 
-			if ( ! customMaterial ) {
+			if ( customMaterial === undefined ) {
 
 				var useMorphing = false;
 
-				if ( material.morphTargets ) {
+				if ( material.morphTargets === true ) {
 
-					if ( geometry && geometry.isBufferGeometry ) {
+					if ( geometry.isBufferGeometry === true ) {
 
 						useMorphing = geometry.morphAttributes && geometry.morphAttributes.position && geometry.morphAttributes.position.length > 0;
 
-					} else if ( geometry && geometry.isGeometry ) {
+					} else if ( geometry.isGeometry === true ) {
 
 						useMorphing = geometry.morphTargets && geometry.morphTargets.length > 0;
 
@@ -19741,20 +19756,25 @@
 
 				}
 
-				if ( object.isSkinnedMesh && material.skinning === false ) {
+				var useSkinning = false;
 
-					console.warn( 'THREE.WebGLShadowMap: THREE.SkinnedMesh with material.skinning set to false:', object );
+				if ( object.isSkinnedMesh === true ) {
+
+					if ( material.skinning === true ) {
+
+						useSkinning = true;
+
+					} else {
+
+						console.warn( 'THREE.WebGLShadowMap: THREE.SkinnedMesh with material.skinning set to false:', object );
+
+					}
 
 				}
 
-				var useSkinning = object.isSkinnedMesh && material.skinning;
+				var useInstancing = object.isInstancedMesh === true;
 
-				var variantIndex = 0;
-
-				if ( useMorphing ) { variantIndex |= _MorphingFlag; }
-				if ( useSkinning ) { variantIndex |= _SkinningFlag; }
-
-				result = materialVariants[ variantIndex ];
+				result = getMaterialVariant( useMorphing, useSkinning, useInstancing );
 
 			} else {
 
@@ -19798,11 +19818,11 @@
 
 			if ( type === VSMShadowMap ) {
 
-				result.side = ( material.shadowSide != null ) ? material.shadowSide : material.side;
+				result.side = ( material.shadowSide !== null ) ? material.shadowSide : material.side;
 
 			} else {
 
-				result.side = ( material.shadowSide != null ) ? material.shadowSide : shadowSide[ material.side ];
+				result.side = ( material.shadowSide !== null ) ? material.shadowSide : shadowSide[ material.side ];
 
 			}
 
@@ -19813,7 +19833,7 @@
 			result.wireframeLinewidth = material.wireframeLinewidth;
 			result.linewidth = material.linewidth;
 
-			if ( light.isPointLight && result.isMeshDistanceMaterial ) {
+			if ( light.isPointLight === true && result.isMeshDistanceMaterial === true ) {
 
 				result.referencePosition.setFromMatrixPosition( light.matrixWorld );
 				result.nearDistance = shadowCameraNear;
@@ -23683,7 +23703,7 @@
 
 		// vr
 
-		var vr = ( typeof navigator !== 'undefined' && 'xr' in navigator && 'supportsSession' in navigator.xr ) ? new WebXRManager( _this, _gl ) : new WebVRManager( _this );
+		var vr = ( typeof navigator !== 'undefined' && 'xr' in navigator && 'isSessionSupported' in navigator.xr ) ? new WebXRManager( _this, _gl ) : new WebVRManager( _this );
 
 		this.vr = vr;
 
@@ -25576,17 +25596,44 @@
 			uniforms.diffuse.value.copy( material.color );
 			uniforms.opacity.value = material.opacity;
 			uniforms.rotation.value = material.rotation;
-			uniforms.map.value = material.map;
 
-			if ( material.map !== null ) {
+			if ( material.map ) {
 
-				if ( material.map.matrixAutoUpdate === true ) {
+				uniforms.map.value = material.map;
 
-					material.map.updateMatrix();
+			}
+
+			if ( material.alphaMap ) {
+
+				uniforms.alphaMap.value = material.alphaMap;
+
+			}
+
+			// uv repeat and offset setting priorities
+			// 1. color map
+			// 2. alpha map
+
+			var uvScaleMap;
+
+			if ( material.map ) {
+
+				uvScaleMap = material.map;
+
+			} else if ( material.alphaMap ) {
+
+				uvScaleMap = material.alphaMap;
+
+			}
+
+			if ( uvScaleMap !== undefined ) {
+
+				if ( uvScaleMap.matrixAutoUpdate === true ) {
+
+					uvScaleMap.updateMatrix();
 
 				}
 
-				uniforms.uvTransform.value.copy( material.map.matrix );
+				uniforms.uvTransform.value.copy( uvScaleMap.matrix );
 
 			}
 
@@ -26389,6 +26436,7 @@
 	 * parameters = {
 	 *  color: <hex>,
 	 *  map: new THREE.Texture( <Image> ),
+	 *  alphaMap: new THREE.Texture( <Image> ),
 	 *  rotation: <float>,
 	 *  sizeAttenuation: <bool>
 	 * }
@@ -26401,7 +26449,10 @@
 		this.type = 'SpriteMaterial';
 
 		this.color = new Color( 0xffffff );
+
 		this.map = null;
+
+		this.alphaMap = null;
 
 		this.rotation = 0;
 
@@ -26422,7 +26473,10 @@
 		Material.prototype.copy.call( this, source );
 
 		this.color.copy( source.color );
+
 		this.map = source.map;
+
+		this.alphaMap = source.alphaMap;
 
 		this.rotation = source.rotation;
 
@@ -32340,6 +32394,7 @@
 
 
 	var Geometries = /*#__PURE__*/Object.freeze({
+		__proto__: null,
 		WireframeGeometry: WireframeGeometry,
 		ParametricGeometry: ParametricGeometry,
 		ParametricBufferGeometry: ParametricBufferGeometry,
@@ -33253,6 +33308,7 @@
 
 
 	var Materials = /*#__PURE__*/Object.freeze({
+		__proto__: null,
 		ShadowMaterial: ShadowMaterial,
 		SpriteMaterial: SpriteMaterial,
 		RawShaderMaterial: RawShaderMaterial,
@@ -37487,6 +37543,7 @@
 
 
 	var Curves = /*#__PURE__*/Object.freeze({
+		__proto__: null,
 		ArcCurve: ArcCurve,
 		CatmullRomCurve3: CatmullRomCurve3,
 		CubicBezierCurve: CubicBezierCurve,
