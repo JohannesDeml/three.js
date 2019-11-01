@@ -274,7 +274,7 @@ function WebGLRenderer( parameters ) {
 
 		utils = new WebGLUtils( _gl, extensions, capabilities );
 
-		state = new WebGLState( _gl, extensions, utils, capabilities );
+		state = new WebGLState( _gl, extensions, capabilities );
 		state.scissor( _currentScissor.copy( _scissor ).multiplyScalar( _pixelRatio ).floor() );
 		state.viewport( _currentViewport.copy( _viewport ).multiplyScalar( _pixelRatio ).floor() );
 
@@ -1497,7 +1497,7 @@ function WebGLRenderer( parameters ) {
 		var parameters = programCache.getParameters(
 			material, lights.state, shadowsArray, fog, _clipping.numPlanes, _clipping.numIntersection, object );
 
-		var code = programCache.getProgramCode( material, parameters );
+		var programCacheKey = programCache.getProgramCacheKey( material, parameters );
 
 		var program = materialProperties.program;
 		var programChange = true;
@@ -1507,7 +1507,7 @@ function WebGLRenderer( parameters ) {
 			// new material
 			material.addEventListener( 'dispose', onMaterialDispose );
 
-		} else if ( program.code !== code ) {
+		} else if ( program.cacheKey !== programCacheKey ) {
 
 			// changed glsl or parameters
 			releaseMaterialProgramReference( material );
@@ -1556,10 +1556,10 @@ function WebGLRenderer( parameters ) {
 
 			material.onBeforeCompile( materialProperties.shader, _this );
 
-			// Computing code again as onBeforeCompile may have changed the shaders
-			code = programCache.getProgramCode( material, parameters );
+			// Computing cache key again as onBeforeCompile may have changed the shaders
+			programCacheKey = programCache.getProgramCacheKey( material, parameters );
 
-			program = programCache.acquireProgram( material, materialProperties.shader, parameters, code );
+			program = programCache.acquireProgram( material, materialProperties.shader, parameters, programCacheKey );
 
 			materialProperties.program = program;
 			material.program = program;
@@ -1778,6 +1778,16 @@ function WebGLRenderer( parameters ) {
 						_vector3.setFromMatrixPosition( camera.matrixWorld ) );
 
 				}
+
+			}
+
+			if ( material.isMeshPhongMaterial ||
+				material.isMeshLambertMaterial ||
+				material.isMeshBasicMaterial ||
+				material.isMeshStandardMaterial ||
+				material.isShaderMaterial ) {
+
+				p_uniforms.setValue( _gl, 'isOrthographic', camera.isOrthographicCamera === true );
 
 			}
 
@@ -2181,17 +2191,43 @@ function WebGLRenderer( parameters ) {
 		uniforms.size.value = material.size * _pixelRatio;
 		uniforms.scale.value = _height * 0.5;
 
-		uniforms.map.value = material.map;
+		if ( material.map ) {
 
-		if ( material.map !== null ) {
+			uniforms.map.value = material.map;
 
-			if ( material.map.matrixAutoUpdate === true ) {
+		}
 
-				material.map.updateMatrix();
+		if ( material.alphaMap ) {
+
+			uniforms.alphaMap.value = material.alphaMap;
+
+		}
+
+		// uv repeat and offset setting priorities
+		// 1. color map
+		// 2. alpha map
+
+		var uvScaleMap;
+
+		if ( material.map ) {
+
+			uvScaleMap = material.map;
+
+		} else if ( material.alphaMap ) {
+
+			uvScaleMap = material.alphaMap;
+
+		}
+
+		if ( uvScaleMap !== undefined ) {
+
+			if ( uvScaleMap.matrixAutoUpdate === true ) {
+
+				uvScaleMap.updateMatrix();
 
 			}
 
-			uniforms.uvTransform.value.copy( material.map.matrix );
+			uniforms.uvTransform.value.copy( uvScaleMap.matrix );
 
 		}
 
@@ -2693,13 +2729,18 @@ function WebGLRenderer( parameters ) {
 
 	this.copyFramebufferToTexture = function ( position, texture, level ) {
 
-		var width = texture.image.width;
-		var height = texture.image.height;
+		if ( level === undefined ) level = 0;
+
+		var levelScale = Math.pow( 2, - level );
+		var width = Math.floor( texture.image.width * levelScale );
+		var height = Math.floor( texture.image.height * levelScale );
 		var glFormat = utils.convert( texture.format );
 
 		textures.setTexture2D( texture, 0 );
 
-		_gl.copyTexImage2D( _gl.TEXTURE_2D, level || 0, glFormat, position.x, position.y, width, height, 0 );
+		_gl.copyTexImage2D( _gl.TEXTURE_2D, level, glFormat, position.x, position.y, width, height, 0 );
+
+		state.unbindTexture();
 
 	};
 
@@ -2721,6 +2762,16 @@ function WebGLRenderer( parameters ) {
 			_gl.texSubImage2D( _gl.TEXTURE_2D, level || 0, position.x, position.y, glFormat, glType, srcTexture.image );
 
 		}
+
+		state.unbindTexture();
+
+	};
+
+	this.initTexture = function ( texture ) {
+
+		textures.setTexture2D( texture, 0 );
+
+		state.unbindTexture();
 
 	};
 
