@@ -86,36 +86,16 @@
 								if ( child.isMesh ) {
 
 									child.material.envMap = envMap;
-									console.log(child.material.map);
+									var texture = child.material.map;
+									if(texture !== null) {
+										texture.minFilter = texture.magFilter = THREE.LinearFilter;
+									}
 
 								}
 
 							} );
 
 							scene.add( gltf.scene );
-
-						} );
-
-						// Cube
-						var geometry = new THREE.BoxBufferGeometry( 1, 1, 1 );
-						var material = new THREE.MeshStandardMaterial();
-
-						var mesh = new THREE.Mesh( geometry, material );
-
-						scene.add( mesh );
-						mesh.position.set(0,0,-2);
-
-						basisLoader.load( 'textures/compressed/PavingStones.basis', function ( texture ) {
-
-							texture.encoding = THREE.sRGBEncoding;
-							material.map = texture;
-							material.envMap = envMap;
-							material.needsUpdate = true;
-							console.log(material.map);
-
-						}, undefined, function ( error ) {
-
-							console.error( error );
 
 						} );
 
