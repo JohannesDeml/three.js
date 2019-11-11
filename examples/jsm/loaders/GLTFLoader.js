@@ -1997,8 +1997,20 @@ var GLTFLoader = ( function () {
 			var samplers = json.samplers || {};
 			var sampler = samplers[ textureDef.sampler ] || {};
 
-			texture.magFilter = WEBGL_FILTERS[ sampler.magFilter ] || LinearFilter;
-			texture.minFilter = WEBGL_FILTERS[ sampler.minFilter ] || LinearMipmapLinearFilter;
+			// Make sure basis textures only use linear filters (https://discourse.threejs.org/t/compressed-texture-workflow-gltf-basis/10039/12)
+			if(source.mimeType === "image/basis") {
+
+				texture.magFilter = LinearFilter;
+				texture.minFilter = LinearFilter;
+
+			}
+			else {
+
+				texture.magFilter = WEBGL_FILTERS[ sampler.magFilter ] || LinearFilter;
+				texture.minFilter = WEBGL_FILTERS[ sampler.minFilter ] || LinearMipmapLinearFilter;
+
+			}
+
 			texture.wrapS = WEBGL_WRAPPINGS[ sampler.wrapS ] || RepeatWrapping;
 			texture.wrapT = WEBGL_WRAPPINGS[ sampler.wrapT ] || RepeatWrapping;
 
