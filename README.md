@@ -1,10 +1,9 @@
 three.js
 ========
 
-[![NPM package][npm]][npm-url]
+[![NPM Package][npm]][npm-url]
 [![Build Size][build-size]][build-size-url]
-[![Build Status][build-status]][build-status-url]
-[![Dependencies][dependencies]][dependencies-url]
+[![NPM Downloads][npm-downloads]][npmtrends-url]
 [![Dev Dependencies][dev-dependencies]][dev-dependencies-url]
 [![Language Grade][lgtm]][lgtm-url]
 
@@ -20,21 +19,16 @@ Import via `import { ClassName } from "three-og";`
 [Migrating](https://github.com/mrdoob/three.js/wiki/Migration-Guide) &mdash;
 [Questions](http://stackoverflow.com/questions/tagged/three.js) &mdash;
 [Forum](https://discourse.threejs.org/) &mdash;
-[Gitter](https://gitter.im/mrdoob/three.js) &mdash;
-[Slack](https://join.slack.com/t/threejs/shared_invite/enQtMzYxMzczODM2OTgxLTQ1YmY4YTQxOTFjNDAzYmQ4NjU2YzRhNzliY2RiNDEyYjU2MjhhODgyYWQ5Y2MyZTU3MWNkOGVmOGRhOTQzYTk)
+[Slack](https://join.slack.com/t/threejs/shared_invite/enQtMzYxMzczODM2OTgxLTQ1YmY4YTQxOTFjNDAzYmQ4NjU2YzRhNzliY2RiNDEyYjU2MjhhODgyYWQ5Y2MyZTU3MWNkOGVmOGRhOTQzYTk) &mdash;
+[Discord](https://discordapp.com/invite/HF4UdyF)
 
 ### Usage ###
-
-Download the [minified library](http://threejs.org/build/three.min.js) and include it in your HTML, or install and import it as a [module](http://threejs.org/docs/#manual/introduction/Import-via-modules),
-Alternatively, see [how to build the library yourself](https://github.com/mrdoob/three.js/wiki/Build-instructions).
-
-```html
-<script src="js/three.min.js"></script>
-```
 
 This code creates a scene, a camera, and a geometric cube, and it adds the cube to the scene. It then creates a `WebGL` renderer for the scene and camera, and it adds that viewport to the `document.body` element. Finally, it animates the cube within the scene for the camera.
 
 ```javascript
+import * as THREE from 'js/three.module.js';
+
 var camera, scene, renderer;
 var geometry, material, mesh;
 
@@ -72,7 +66,7 @@ function animate() {
 }
 ```
 
-If everything went well you should see [this](https://jsfiddle.net/f2Lommf5/).
+If everything went well you should see [this](https://jsfiddle.net/8kubjpL5/).
 
 ### Change log ###
 
@@ -89,5 +83,5 @@ If everything went well you should see [this](https://jsfiddle.net/f2Lommf5/).
 [dependencies-url]: https://david-dm.org/mrdoob/three.js
 [dev-dependencies]: https://img.shields.io/david/dev/mrdoob/three.js.svg
 [dev-dependencies-url]: https://david-dm.org/mrdoob/three.js#info=devDependencies
-[lgtm]: https://img.shields.io/lgtm/grade/javascript/g/mrdoob/three.js.svg?label=code%20quality
+[lgtm]: https://img.shields.io/lgtm/alerts/github/mrdoob/three.js
 [lgtm-url]: https://lgtm.com/projects/g/mrdoob/three.js/
