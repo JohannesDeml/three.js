@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>three.js css3d - youtube</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<link type="text/css" rel="stylesheet" href="main.css">
+		<style>
+			body {
+				background-color: #ffffff;
+			}
+
+			#blocker {
+				position: absolute;
+				top: 0;
+				left: 0;
+				bottom: 0;
+				right: 0;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="container">
+			<div id="css"></div>
+			<div id="webgl"></div>
+		</div>
+		<div id="blocker"></div>
+
+		<script type="module">
+
+			import * as THREE from '../build/three.module.js';
+
+			import { TrackballControls } from './jsm/controls/TrackballControls.js';
+			import { CSS3DRenderer, CSS3DObject } from './jsm/renderers/CSS3DRenderer.js';
+
+			var camera, scene, renderer, cssScene, cssRenderer;
+			var controls;
+			var geometry, material, mesh;
+
+			var Element = function ( id, x, y, z, ry ) {
+
+				var div = document.createElement( 'div' );
+				div.style.width = '480px';
+				div.style.height = '360px';
+				div.style.backgroundColor = '#000';
+
+				var iframe = document.createElement( 'iframe' );
+				iframe.style.width = '480px';
+				iframe.style.height = '360px';
+				iframe.style.border = '0px';
+				iframe.src = [ 'https://www.youtube.com/embed/', id, '?rel=0' ].join( '' );
+				div.appendChild( iframe );
+
+				var object = new CSS3DObject( div );
+				object.position.set( x, y, z );
+				object.rotation.y = ry;
+
+				return object;
+
+			};
+
+			init();
+			animate();
+
+			function init() {
+
+				camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 1, 5000 );
+				camera.position.set( 500, 350, 750 );
+
+				scene = new THREE.Scene();
+
+				renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+				renderer.setClearColor( 0x000000, 0 );
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				var webglContainer = document.getElementById( 'webgl' );
+				webglContainer.appendChild( renderer.domElement );
+
+				cssScene = new THREE.Scene();
+
+				cssRenderer = new CSS3DRenderer();
+				cssRenderer.setSize( window.innerWidth, window.innerHeight );
+				cssRenderer.domElement.style.position = 'absolute';
+				cssRenderer.domElement.style.top = 0;
+				var cssContainer = document.getElementById( 'css' );
+				cssContainer.appendChild( cssRenderer.domElement );
+
+				var group = new THREE.Group();
+				group.add( new Element( 'SJOz3qjfQXU', 0, 0, 240, 0 ) );
+				group.add( new Element( 'Y2-xZ-1HE-Q', 240, 0, 0, Math.PI / 2 ) );
+				group.add( new Element( 'IrydklNpcFI', 0, 0, - 240, Math.PI ) );
+				group.add( new Element( '9ubytEsCaS0', - 240, 0, 0, - Math.PI / 2 ) );
+				cssScene.add( group );
+
+				geometry = geometry = new THREE.BoxBufferGeometry( 200, 200, 200 );
+				material = new THREE.MeshNormalMaterial();
+
+				mesh = new THREE.Mesh( geometry, material );
+				scene.add( mesh );
+
+				controls = new TrackballControls( camera, cssRenderer.domElement );
+				controls.rotateSpeed = 4;
+
+				window.addEventListener( 'resize', onWindowResize, false );
+
+				// Block iframe events when dragging camera
+
+				var blocker = document.getElementById( 'blocker' );
+				blocker.style.display = 'none';
+
+				controls.addEventListener( 'start', function () {
+
+					blocker.style.display = '';
+
+				} );
+				controls.addEventListener( 'end', function () {
+
+					blocker.style.display = 'none';
+
+				} );
+
+			}
+
+			function onWindowResize() {
+
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				cssRenderer.setSize( window.innerWidth, window.innerHeight );
+
+			}
+
+			function animate() {
+
+				requestAnimationFrame( animate );
+				controls.update();
+				renderer.render( scene, camera );
+				cssRenderer.render( cssScene, camera );
+
+			}
+
+		</script>
+	</body>
+</html>

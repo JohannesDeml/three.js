@@ -20023,8 +20023,6 @@ function WebGLShadowMap( _renderer, _objects, maxTextureSize ) {
 
 			if ( _shadowMapSize.x > maxTextureSize || _shadowMapSize.y > maxTextureSize ) {
 
-				console.warn( 'THREE.WebGLShadowMap:', light, 'has shadow exceeding max texture size, reducing' );
-
 				if ( _shadowMapSize.x > maxTextureSize ) {
 
 					_viewportSize.x = Math.floor( maxTextureSize / shadowFrameExtents.x );
@@ -32737,8 +32735,9 @@ function CircleBufferGeometry( radius, segments, thetaStart, thetaLength ) {
 CircleBufferGeometry.prototype = Object.create( BufferGeometry.prototype );
 CircleBufferGeometry.prototype.constructor = CircleBufferGeometry;
 
+
+
 var Geometries = /*#__PURE__*/Object.freeze({
-	__proto__: null,
 	WireframeGeometry: WireframeGeometry,
 	ParametricGeometry: ParametricGeometry,
 	ParametricBufferGeometry: ParametricBufferGeometry,
@@ -33781,8 +33780,9 @@ LineDashedMaterial.prototype.copy = function ( source ) {
 
 };
 
+
+
 var Materials = /*#__PURE__*/Object.freeze({
-	__proto__: null,
 	ShadowMaterial: ShadowMaterial,
 	SpriteMaterial: SpriteMaterial,
 	RawShaderMaterial: RawShaderMaterial,
@@ -38226,8 +38226,9 @@ SplineCurve.prototype.fromJSON = function ( json ) {
 
 };
 
+
+
 var Curves = /*#__PURE__*/Object.freeze({
-	__proto__: null,
 	ArcCurve: ArcCurve,
 	CatmullRomCurve3: CatmullRomCurve3,
 	CubicBezierCurve: CubicBezierCurve,

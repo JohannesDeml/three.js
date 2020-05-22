@@ -2,7 +2,7 @@
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
 	typeof define === 'function' && define.amd ? define(['exports'], factory) :
 	(global = global || self, factory(global.THREE = {}));
-}(this, (function (exports) { 'use strict';
+}(this, function (exports) { 'use strict';
 
 	// Polyfills
 
@@ -20036,8 +20036,6 @@
 
 				if ( _shadowMapSize.x > maxTextureSize || _shadowMapSize.y > maxTextureSize ) {
 
-					console.warn( 'THREE.WebGLShadowMap:', light, 'has shadow exceeding max texture size, reducing' );
-
 					if ( _shadowMapSize.x > maxTextureSize ) {
 
 						_viewportSize.x = Math.floor( maxTextureSize / shadowFrameExtents.x );
@@ -32745,8 +32743,9 @@
 	CircleBufferGeometry.prototype = Object.create( BufferGeometry.prototype );
 	CircleBufferGeometry.prototype.constructor = CircleBufferGeometry;
 
+
+
 	var Geometries = /*#__PURE__*/Object.freeze({
-		__proto__: null,
 		WireframeGeometry: WireframeGeometry,
 		ParametricGeometry: ParametricGeometry,
 		ParametricBufferGeometry: ParametricBufferGeometry,
@@ -33789,8 +33788,9 @@
 
 	};
 
+
+
 	var Materials = /*#__PURE__*/Object.freeze({
-		__proto__: null,
 		ShadowMaterial: ShadowMaterial,
 		SpriteMaterial: SpriteMaterial,
 		RawShaderMaterial: RawShaderMaterial,
@@ -38234,8 +38234,9 @@
 
 	};
 
+
+
 	var Curves = /*#__PURE__*/Object.freeze({
-		__proto__: null,
 		ArcCurve: ArcCurve,
 		CatmullRomCurve3: CatmullRomCurve3,
 		CubicBezierCurve: CubicBezierCurve,
@@ -51018,4 +51019,4 @@
 
 	Object.defineProperty(exports, '__esModule', { value: true });
 
-})));
+}));
