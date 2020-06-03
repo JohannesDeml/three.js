@@ -17,8 +17,6 @@
 
 			import * as THREE from '../build/three.module.js';
 
-			import Stats from './jsm/libs/stats.module.js';
-
 			import { BasisTextureLoader } from './jsm/loaders/BasisTextureLoader.js';
 			import { OrbitControls } from './jsm/controls/OrbitControls.js';
 			import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
@@ -43,6 +41,17 @@
 				camera.position.set( - 1.8, 0.6, 2.7 );
 
 				scene = new THREE.Scene();
+
+				renderer = new THREE.WebGLRenderer( { antialias: true } );
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.toneMapping = THREE.ACESFilmicToneMapping;
+				renderer.toneMappingExposure = 0.8;
+				renderer.outputEncoding = THREE.sRGBEncoding;
+				container.appendChild( renderer.domElement );
+
+				var pmremGenerator = new THREE.PMREMGenerator( renderer );
+				pmremGenerator.compileEquirectangularShader();
 
 				new RGBELoader()
 					.setDataType( THREE.UnsignedByteType )
@@ -73,7 +82,7 @@
 
 
 						var loader = new GLTFLoader().setPath( 'models/gltf/BasisBlock/glTF-basis/' );
-						loader.load( 'BasisBlock.gltf', function ( gltf ) {
+						loader.load( 'basis_block.gltf', function ( gltf ) {
 
 							gltf.scene.traverse( function ( child ) {
 
@@ -94,17 +103,6 @@
 						} );
 
 					} );
-
-				renderer = new THREE.WebGLRenderer( { antialias: true } );
-				renderer.setPixelRatio( window.devicePixelRatio );
-				renderer.setSize( window.innerWidth, window.innerHeight );
-				renderer.toneMapping = THREE.ACESFilmicToneMapping;
-				renderer.toneMappingExposure = 0.8;
-				renderer.outputEncoding = THREE.sRGBEncoding;
-				container.appendChild( renderer.domElement );
-
-				var pmremGenerator = new THREE.PMREMGenerator( renderer );
-				pmremGenerator.compileEquirectangularShader();
 
 				controls = new OrbitControls( camera, renderer.domElement );
 				controls.addEventListener( 'change', render ); // use if there is no animation loop

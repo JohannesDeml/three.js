@@ -15,12 +15,24 @@
     "nodes" : [
         {
             "mesh" : 0,
-            "name" : "Template Image Cube"
+            "name" : "Basis Block",
+            "rotation" : [
+                0,
+                -0.7071067094802856,
+                -0.7071068286895752,
+                0
+            ],
+            "translation" : [
+                0,
+                0.5000000596046448,
+                0
+            ]
         }
     ],
     "materials" : [
         {
-            "name" : "image_template",
+            "doubleSided" : true,
+            "name" : "Material_0",
             "pbrMetallicRoughness" : {
                 "baseColorTexture" : {
                     "index" : 0,
@@ -56,8 +68,8 @@
     "images" : [
         {
             "mimeType" : "image/basis",
-            "name" : "d_image_template",
-            "uri" : "PavingStonesMip.basis"
+            "name" : "d_basis_block",
+            "uri" : "d_basis_block.basis"
         }
     ],
     "accessors" : [
@@ -66,14 +78,14 @@
             "componentType" : 5126,
             "count" : 24,
             "max" : [
-                0.4999999701976776,
                 0.5,
-                0.10000010579824448
+                0.5000000596046448,
+                0.5000000596046448
             ],
             "min" : [
-                -0.4999999701976776,
                 -0.5,
-                -1.043081283569336e-07
+                -0.5000000596046448,
+                -0.5000000596046448
             ],
             "type" : "VEC3"
         },
@@ -132,7 +144,7 @@
     "buffers" : [
         {
             "byteLength" : 1224,
-            "uri" : "image_template.bin"
+            "uri" : "basis_block.bin"
         }
     ]
 }
