@@ -57,15 +57,9 @@
         {
             "mimeType" : "image/basis",
             "name" : "d_image_template",
-            "uri" : "PavingStones.basis"
+            "uri" : "PavingStonesMip.basis"
         }
     ],
-	"extensionsUsed": [
-		"GOOGLE_texture_basis"
-	],
-	"extensionsRequired": [
-		"GOOGLE_texture_basis"
-	],
     "accessors" : [
         {
             "bufferView" : 0,
