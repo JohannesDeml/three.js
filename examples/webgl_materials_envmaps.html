@@ -128,12 +128,14 @@
 				var geometry = new THREE.SphereBufferGeometry( 400.0, 48, 24 );
 				sphereLambertMaterial = new THREE.MeshLambertMaterial( {
 					envMap: textureCube,
+					refractionRatio: 0.8
 				} );
 
 				sphereStandardMaterial = new THREE.MeshStandardMaterial( {
 					envMap: textureCube,
 					metalness: 1.0,
-					roughness: 0.0
+					roughness: 0.0,
+					refractionRatio: 0.8
 				 } );
 				sphereMesh = new THREE.Mesh( geometry, sphereLambertMaterial );
 
@@ -190,6 +192,8 @@
 						sphereStandardMaterial.needsUpdate = true;
 
 					},
+					RefractionRatio: 0.8,
+					Roughness: 0.0,
 					Refraction: false
 				};
 
@@ -197,6 +201,22 @@
 				gui.add( params, 'Cube' );
 				gui.add( params, 'Equirectangular' );
 				gui.add( params, 'PMREM' );
+				gui.add( params, 'RefractionRatio', -1.0, 1.0, 0.1).onChange( function ( value ) {
+
+					sphereLambertMaterial.refractionRatio = value;
+					sphereLambertMaterial.needsUpdate = true;
+					sphereStandardMaterial.refractionRatio = value;
+					sphereStandardMaterial.needsUpdate = true;
+
+				} );
+				gui.add( params, 'Roughness', 0.0, 1.0, 0.1).onChange( function ( value ) {
+
+					sphereLambertMaterial.roughness = value;
+					sphereLambertMaterial.needsUpdate = true;
+					sphereStandardMaterial.roughness = value;
+					sphereStandardMaterial.needsUpdate = true;
+
+				} );
 				gui.add( params, 'Refraction' ).onChange( function ( value ) {
 
 					if ( value ) {
