@@ -29,7 +29,7 @@ var SidebarProject = function ( editor ) {
 	// Title
 
 	var titleRow = new UIRow();
-	var title = new UIInput( config.getKey( 'project/title' ) ).setLeft( '100px' ).onChange( function () {
+	var title = new UIInput( config.getKey( 'project/title' ) ).setLeft( '100px' ).setWidth( '150px' ).onChange( function () {
 
 		config.setKey( 'project/title', this.getValue() );
 
@@ -150,18 +150,13 @@ var SidebarProject = function ( editor ) {
 		0: 'None',
 		1: 'Linear',
 		2: 'Reinhard',
-		3: 'Uncharted2',
-		4: 'Cineon',
-		5: 'ACESFilmic',
+		3: 'Cineon',
+		4: 'ACESFilmic'
 	} ).setWidth( '150px' ).onChange( function () {
 
 		var toneMapping = parseFloat( this.getValue() );
 		config.setKey( 'project/renderer/toneMapping', toneMapping );
 		updateRenderer();
-
-		// WebGLRenderer.whitePoint is only relevant for Uncharted2 tonemapping
-
-		toneMappingWhitePointRow.setDisplay( ( toneMapping === 3 ) ? 'block' : 'none' );
 
 	} );
 	toneMappingSelect.setValue( config.getKey( 'project/renderer/toneMapping' ) );
@@ -185,21 +180,6 @@ var SidebarProject = function ( editor ) {
 	toneMappingExposureRow.add( toneMappingExposure );
 	rendererPanel.add( toneMappingExposureRow );
 
-	// Tonemapping / White Point
-
-	var toneMappingWhitePointRow = new UIRow();
-	var toneMappingWhitePoint = new UINumber( config.getKey( 'project/renderer/toneMappingWhitePoint' ) ).setRange( 0, 10 ).onChange( function () {
-
-		config.setKey( 'project/renderer/toneMappingWhitePoint', this.getValue() );
-		updateTonemapping();
-
-	} );
-
-	toneMappingWhitePointRow.add( new UIText( strings.getKey( 'sidebar/project/toneMappingWhitePoint' ) ).setWidth( '90px' ) );
-	toneMappingWhitePointRow.add( toneMappingWhitePoint );
-	rendererPanel.add( toneMappingWhitePointRow );
-	toneMappingWhitePointRow.setDisplay( ( config.getKey( 'project/renderer/toneMapping' ) === 3 ? 'block' : 'none' ) );
-
 	//
 
 	function updateRenderer() {
@@ -210,13 +190,12 @@ var SidebarProject = function ( editor ) {
 			shadowTypeSelect.getValue(),
 			toneMappingSelect.getValue(),
 			toneMappingExposure.getValue(),
-			toneMappingWhitePoint.getValue(),
 			physicallyCorrectLightsBoolean.getValue()
 		);
 
 	}
 
-	function createRenderer( antialias, shadows, shadowType, toneMapping, toneMappingExposure, toneMappingWhitePoint, physicallyCorrectLights ) {
+	function createRenderer( antialias, shadows, shadowType, toneMapping, toneMappingExposure, physicallyCorrectLights ) {
 
 		var parameters = { antialias: antialias };
 
@@ -241,7 +220,6 @@ var SidebarProject = function ( editor ) {
 
 		currentRenderer.toneMapping = parseFloat( toneMapping );
 		currentRenderer.toneMappingExposure = toneMappingExposure;
-		currentRenderer.toneMappingWhitePoint = toneMappingWhitePoint;
 		currentRenderer.physicallyCorrectLights = physicallyCorrectLights;
 
 		signals.rendererChanged.dispatch( currentRenderer, currentPmremGenerator );
@@ -251,7 +229,6 @@ var SidebarProject = function ( editor ) {
 	function updateTonemapping() {
 
 		currentRenderer.toneMappingExposure = toneMappingExposure.getValue();
-		currentRenderer.toneMappingWhitePoint = toneMappingWhitePoint.getValue();
 
 		signals.rendererUpdated.dispatch();
 
@@ -263,7 +240,6 @@ var SidebarProject = function ( editor ) {
 		config.getKey( 'project/renderer/shadowType' ),
 		config.getKey( 'project/renderer/toneMapping' ),
 		config.getKey( 'project/renderer/toneMappingExposure' ),
-		config.getKey( 'project/renderer/toneMappingWhitePoint' ),
 		config.getKey( 'project/renderer/physicallyCorrectLights' )
 	 );
 
