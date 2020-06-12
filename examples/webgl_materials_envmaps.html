@@ -46,7 +46,7 @@
 
 				// Lights
 
-				var ambient = new THREE.AmbientLight( 0xffffff );
+				var ambient = new THREE.AmbientLight( 0xffffff, 1.0 );
 				scene.add( ambient );
 
 				// Textures
@@ -133,7 +133,7 @@
 
 				sphereStandardMaterial = new THREE.MeshStandardMaterial( {
 					envMap: textureCube,
-					metalness: 1.0,
+					metalness: 0.0,
 					roughness: 0.0,
 					refractionRatio: 0.8
 				 } );
@@ -172,6 +172,7 @@
 						sphereMesh.material = sphereLambertMaterial;
 						sphereLambertMaterial.envMap = textureCube;
 						sphereLambertMaterial.needsUpdate = true;
+						ambient.intenstiy = 1.0;
 
 					},
 					Equirectangular: function () {
@@ -181,6 +182,7 @@
 						sphereMesh.material = sphereLambertMaterial;
 						sphereLambertMaterial.envMap = textureEquirec;
 						sphereLambertMaterial.needsUpdate = true;
+						ambient.intensity = 1.0;
 
 					},
 					PMREM: function () {
@@ -191,9 +193,13 @@
 						sphereStandardMaterial.envMap = texturePmrem;
 						sphereStandardMaterial.needsUpdate = true;
 
+						// IBL adds light
+						ambient.intensity = 0.0;
+
 					},
 					RefractionRatio: 0.8,
 					Roughness: 0.0,
+					Metalness: 0.0,
 					Refraction: false
 				};
 
@@ -201,7 +207,7 @@
 				gui.add( params, 'Cube' );
 				gui.add( params, 'Equirectangular' );
 				gui.add( params, 'PMREM' );
-				gui.add( params, 'RefractionRatio', -1.0, 1.0, 0.1).onChange( function ( value ) {
+				gui.add( params, 'RefractionRatio', -1.0, 1.0, 0.05).onChange( function ( value ) {
 
 					sphereLambertMaterial.refractionRatio = value;
 					sphereLambertMaterial.needsUpdate = true;
@@ -211,9 +217,13 @@
 				} );
 				gui.add( params, 'Roughness', 0.0, 1.0, 0.1).onChange( function ( value ) {
 
-					sphereLambertMaterial.roughness = value;
-					sphereLambertMaterial.needsUpdate = true;
 					sphereStandardMaterial.roughness = value;
+					sphereStandardMaterial.needsUpdate = true;
+
+				} );
+				gui.add( params, 'Metalness', 0.0, 1.0, 0.1).onChange( function ( value ) {
+
+					sphereStandardMaterial.metalness = value;
 					sphereStandardMaterial.needsUpdate = true;
 
 				} );
