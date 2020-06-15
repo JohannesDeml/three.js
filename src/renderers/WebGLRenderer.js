@@ -184,7 +184,21 @@ function WebGLRenderer( parameters ) {
 
 	// initialize
 
-	let _gl;
+	let _gl = _context;
+
+	function getContext( contextNames, contextAttributes ) {
+
+		for ( let i = 0; i < contextNames.length; i ++ ) {
+
+			const contextName = contextNames[ i ];
+			const context = _canvas.getContext( contextName, contextAttributes );
+			if ( context !== null ) return context;
+
+		}
+
+		return null;
+
+	}
 
 	try {
 
@@ -204,17 +218,29 @@ function WebGLRenderer( parameters ) {
 		_canvas.addEventListener( 'webglcontextlost', onContextLost, false );
 		_canvas.addEventListener( 'webglcontextrestored', onContextRestore, false );
 
-		_gl = _context || _canvas.getContext( 'webgl2', contextAttributes ) || _canvas.getContext( 'webgl', contextAttributes ) || _canvas.getContext( 'experimental-webgl', contextAttributes );
-
 		if ( _gl === null ) {
 
-			if ( _canvas.getContext( 'webgl2' ) || _canvas.getContext( 'webgl' ) || _canvas.getContext( 'experimental-webgl' ) ) {
+			const contextNames = [ 'webgl2', 'webgl', 'experimental-webgl' ];
 
-				throw new Error( 'Error creating WebGL context with your selected attributes.' );
+			if ( _this.isWebGL1Renderer === true ) {
 
-			} else {
+				contextNames.shift();
 
-				throw new Error( 'Error creating WebGL context.' );
+			}
+
+			_gl = getContext( contextNames, contextAttributes );
+
+			if ( _gl === null ) {
+
+				if ( getContext( contextNames ) ) {
+
+					throw new Error( 'Error creating WebGL context with your selected attributes.' );
+
+				} else {
+
+					throw new Error( 'Error creating WebGL context.' );
+
+				}
 
 			}
 
@@ -1056,7 +1082,7 @@ function WebGLRenderer( parameters ) {
 
 		currentRenderState.setupLights( camera );
 
-		const compiled = {};
+		const compiled = new WeakMap();
 
 		scene.traverse( function ( object ) {
 
@@ -1070,19 +1096,19 @@ function WebGLRenderer( parameters ) {
 
 						let material2 = material[ i ];
 
-						if ( material2.uuid in compiled === false ) {
+						if ( compiled.has( material2 ) === false ) {
 
 							initMaterial( material2, scene, object );
-							compiled[ material2.uuid ] = true;
+							compiled.set( material2 );
 
 						}
 
 					}
 
-				} else if ( material.uuid in compiled === false ) {
+				} else if ( compiled.has( material ) === false ) {
 
 					initMaterial( material, scene, object );
-					compiled[ material.uuid ] = true;
+					compiled.set( material );
 
 				}
 

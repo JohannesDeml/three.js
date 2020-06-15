@@ -2,7 +2,7 @@
  * @author mrdoob / http://mrdoob.com/
  */
 
-var Strings = function ( config ) {
+function Strings( config ) {
 
 	var language = config.getKey( 'language' );
 
@@ -276,6 +276,8 @@ var Strings = function ( config ) {
 			'sidebar/material/opacity': 'Opacity',
 			'sidebar/material/transparent': 'Transparent',
 			'sidebar/material/alphatest': 'Alpha Test',
+			'sidebar/material/depthtest': 'Depth Test',
+			'sidebar/material/depthwrite': 'Depth Write',
 			'sidebar/material/wireframe': 'Wireframe',
 
 			'sidebar/script': 'Script',
@@ -290,10 +292,8 @@ var Strings = function ( config ) {
 			'sidebar/project/renderer': 'Renderer',
 			'sidebar/project/antialias': 'Antialias',
 			'sidebar/project/shadows': 'Shadows',
-			'sidebar/project/shadowType': 'Shadow Type',
-			'sidebar/project/physicallyCorrectLights': 'Physically correct lights',
+			'sidebar/project/physicallyCorrectLights': 'Physical lights',
 			'sidebar/project/toneMapping': 'Tone mapping',
-			'sidebar/project/toneMappingExposure': 'Exposure',
 			'sidebar/project/materials': 'Materials',
 			'sidebar/project/Assign': 'Assign',
 
@@ -590,6 +590,8 @@ var Strings = function ( config ) {
 			'sidebar/material/opacity': 'Opacité',
 			'sidebar/material/transparent': 'Transparence',
 			'sidebar/material/alphatest': 'Test de transparence',
+			'sidebar/material/depthtest': 'Depth Test',
+			'sidebar/material/depthwrite': 'Depth Write',
 			'sidebar/material/wireframe': 'Fil de fer',
 
 			'sidebar/script': 'Script',
@@ -604,10 +606,8 @@ var Strings = function ( config ) {
 			'sidebar/project/renderer': 'Rendus',
 			'sidebar/project/antialias': 'Anticrénelage',
 			'sidebar/project/shadows': 'Ombres',
-			'sidebar/project/shadowType': 'Type d\'ombre',
-			'sidebar/project/physicallyCorrectLights': 'Rendu physique lumineux',
+			'sidebar/project/physicallyCorrectLights': 'Physical lights',
 			'sidebar/project/toneMapping': 'Mappage des nuances',
-			'sidebar/project/toneMappingExposure': 'Réglage d\'exposition',
 			'sidebar/project/materials': 'Matériaux',
 			'sidebar/project/Assign': 'Attribuer',
 
@@ -878,6 +878,8 @@ var Strings = function ( config ) {
 			'sidebar/material/opacity': '透明度',
 			'sidebar/material/transparent': '透明性',
 			'sidebar/material/alphatest': 'α测试',
+			'sidebar/material/depthtest': 'Depth Test',
+			'sidebar/material/depthwrite': 'Depth Write',
 			'sidebar/material/wireframe': '线框',
 
 			'sidebar/script': '脚本',
@@ -892,10 +894,8 @@ var Strings = function ( config ) {
 			'sidebar/project/renderer': '渲染器',
 			'sidebar/project/antialias': '抗锯齿',
 			'sidebar/project/shadows': '阴影',
-			'sidebar/project/shadowType': '阴影类型',
-			'sidebar/project/physicallyCorrectLights': '物理光照',
+			'sidebar/project/physicallyCorrectLights': 'Physical lights',
 			'sidebar/project/toneMapping': '色调映射',
-			'sidebar/project/toneMappingExposure': '曝光',
 			'sidebar/project/materials': '材质',
 			'sidebar/project/Assign': '应用',
 
@@ -938,6 +938,6 @@ var Strings = function ( config ) {
 
 	};
 
-};
+}
 
 export { Strings };

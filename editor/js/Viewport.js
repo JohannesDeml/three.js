@@ -17,7 +17,7 @@ import { SetPositionCommand } from './commands/SetPositionCommand.js';
 import { SetRotationCommand } from './commands/SetRotationCommand.js';
 import { SetScaleCommand } from './commands/SetScaleCommand.js';
 
-var Viewport = function ( editor ) {
+function Viewport( editor ) {
 
 	var signals = editor.signals;
 
@@ -689,13 +689,12 @@ var Viewport = function ( editor ) {
 		}
 
 		endTime = performance.now();
-		var frametime = endTime - startTime;
-		editor.signals.sceneRendered.dispatch( frametime );
+		editor.signals.sceneRendered.dispatch( endTime - startTime );
 
 	}
 
 	return container;
 
-};
+}
 
 export { Viewport };
