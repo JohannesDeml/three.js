@@ -197,6 +197,20 @@
 						ambient.intensity = 0.0;
 
 					},
+					LogCode: function () {
+
+						// Force shaders to be built
+						renderer.compile(scene, camera);
+
+						// Get the GL context:
+						const gl = renderer.getContext();
+
+						// Print the shader source!
+						console.log(
+						gl.getShaderSource(sphereStandardMaterial.program.fragmentShader)
+						);
+
+					},
 					RefractionRatio: 0.8,
 					Roughness: 0.0,
 					Metalness: 0.0,
@@ -207,6 +221,7 @@
 				gui.add( params, 'Cube' );
 				gui.add( params, 'Equirectangular' );
 				gui.add( params, 'PMREM' );
+				gui.add( params, 'LogCode' );
 				gui.add( params, 'RefractionRatio', -1.0, 1.0, 0.05).onChange( function ( value ) {
 
 					sphereLambertMaterial.refractionRatio = value;
@@ -250,7 +265,6 @@
 				gui.open();
 
 				window.addEventListener( 'resize', onWindowResize, false );
-
 			}
 
 			function onWindowResize() {
