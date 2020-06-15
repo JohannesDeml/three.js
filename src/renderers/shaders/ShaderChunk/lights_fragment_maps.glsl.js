@@ -28,6 +28,10 @@ export default /* glsl */`
 
 	radiance += getLightProbeIndirectRadianceReflection( /*specularLightProbe,*/ geometry.viewDir, geometry.normal, material.specularRoughness, maxMipLevel );
 
+	#ifndef ENVMAP_MODE_REFLECTION
+		refraction = getLightProbeIndirectRadianceRefraction( /*specularLightProbe,*/ geometry.viewDir, geometry.normal, material.specularRoughness, maxMipLevel );
+	#endif
+
 	#ifdef CLEARCOAT
 
 		clearcoatRadiance += getLightProbeIndirectRadiance( /*specularLightProbe,*/ geometry.viewDir, geometry.clearcoatNormal, material.clearcoatRoughness, maxMipLevel );
