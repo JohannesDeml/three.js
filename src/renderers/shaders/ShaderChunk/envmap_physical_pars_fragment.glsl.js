@@ -56,20 +56,7 @@ export default /* glsl */`
 
 	}
 
-	vec3 getLightProbeIndirectRadiance( /*const in SpecularLightProbe specularLightProbe,*/ const in vec3 viewDir, const in vec3 normal, const in float roughness, const in int maxMIPLevel ) {
-
-		#ifdef ENVMAP_MODE_REFLECTION
-
-		  vec3 reflectVec = reflect( -viewDir, normal );
-
-		  // Mixing the reflection with the normal is more accurate and keeps rough objects from gathering light from behind their tangent plane.
-		  reflectVec = normalize( mix( reflectVec, normal, roughness * roughness) );
-
-		#else
-
-		  vec3 reflectVec = refract( -viewDir, normal, refractionRatio );
-
-		#endif
+	vec3 getLightProbeIndirectRadiance( /*const in SpecularLightProbe specularLightProbe,*/ in vec3 reflectVec, const in float roughness, const in int maxMIPLevel ) {
 
 		reflectVec = inverseTransformDirection( reflectVec, viewMatrix );
 
@@ -116,6 +103,29 @@ export default /* glsl */`
 		return envMapColor.rgb * envMapIntensity;
 
 	}
+
+	vec3 getLightProbeIndirectRadianceReflection( /*const in SpecularLightProbe specularLightProbe,*/ const in vec3 viewDir, const in vec3 normal, const in float roughness, const in int maxMIPLevel ) {
+
+		vec3 reflectVec = reflect( -viewDir, normal );
+
+		// Mixing the reflection with the normal is more accurate and keeps rough objects from gathering light from behind their tangent plane.
+		reflectVec = normalize( mix( reflectVec, normal, roughness * roughness) );
+
+		return getLightProbeIndirectRadiance( /*const in SpecularLightProbe specularLightProbe,*/ reflectVec, roughness, maxMIPLevel );
+
+	}
+
+	#ifndef ENVMAP_MODE_REFLECTION
+
+	vec3 getLightProbeIndirectRadianceRefraction( /*const in SpecularLightProbe specularLightProbe,*/ const in vec3 viewDir, const in vec3 normal, const in float roughness, const in int maxMIPLevel ) {
+
+		vec3 reflectVec = refract( -viewDir, normal, refractionRatio );
+
+		return getLightProbeIndirectRadiance( /*const in SpecularLightProbe specularLightProbe,*/ reflectVec, roughness, maxMIPLevel );
+
+	}
+
+	#endif
 
 #endif
 `;

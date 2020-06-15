@@ -148,5 +148,9 @@ IncidentLight directLight;
 	vec3 radiance = vec3( 0.0 );
 	vec3 clearcoatRadiance = vec3( 0.0 );
 
+	#ifndef ENVMAP_MODE_REFLECTION
+		vec3 refraction = vec3( 0.0 );
+	#endif
+
 #endif
 `;
