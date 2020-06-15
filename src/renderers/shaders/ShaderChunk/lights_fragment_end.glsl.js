@@ -10,7 +10,8 @@ export default /* glsl */`
 	RE_IndirectSpecular( radiance, iblIrradiance, clearcoatRadiance, geometry, material, reflectedLight );
 
 	#ifndef ENVMAP_MODE_REFLECTION
-		reflectedLight.indirectDiffuse = refraction;
+		vec3 diffuse = material.diffuseColor;
+		reflectedLight.indirectDiffuse = diffuse * refraction;
 	#endif
 
 #endif
