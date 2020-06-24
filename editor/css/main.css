@@ -26,6 +26,13 @@ input {
 	vertical-align: middle;
 }
 
+	input[type="color"]::-webkit-color-swatch-wrapper {
+		padding: 0;
+	}
+	input[type="color"]::-webkit-color-swatch {
+		border: none;
+	}
+
 textarea {
 	tab-size: 4;
 	white-space: pre;
@@ -188,9 +195,21 @@ textarea, input { outline: none; } /* osx */
 	content: '●';
 }
 
+/* */
+
 #outliner .Scene {
-	color: #ccccff;
+	color: #8888dd;
 }
+
+#outliner .Camera {
+	color: #dd8888;
+}
+
+#outliner .Light {
+	color: #dddd88;
+}
+
+/* */
 
 #outliner .Object3D {
 	color: #aaaaee;
@@ -214,32 +233,12 @@ textarea, input { outline: none; } /* osx */
 
 /* */
 
-#outliner .PointLight {
-	color: #dddd00;
-}
-
-/* */
-
 #outliner .Geometry {
-	color: #88ff88;
-}
-
-#outliner .BoxGeometry {
-	color: #bbeebb;
-}
-
-#outliner .TorusGeometry {
 	color: #aaeeaa;
 }
 
-/* */
-
 #outliner .Material {
-	color: #ff8888;
-}
-
-#outliner .MeshPhongMaterial {
-	color: #ffaa88;
+	color: #eeaaee;
 }
 
 /* */
@@ -254,6 +253,7 @@ button {
 	color: #555;
 	background-color: #ddd;
 	border: 0px;
+	margin: 0px; /* GNOME Web */
 	padding: 5px 8px;
 	text-transform: uppercase;
 	cursor: pointer;

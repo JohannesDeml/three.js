@@ -5,7 +5,7 @@
 import { WebGLUniforms } from './WebGLUniforms.js';
 import { WebGLShader } from './WebGLShader.js';
 import { ShaderChunk } from '../shaders/ShaderChunk.js';
-import { NoToneMapping, AddOperation, MixOperation, MultiplyOperation, EquirectangularRefractionMapping, CubeRefractionMapping, EquirectangularReflectionMapping, CubeUVRefractionMapping, CubeUVReflectionMapping, CubeReflectionMapping, PCFSoftShadowMap, PCFShadowMap, VSMShadowMap, ACESFilmicToneMapping, CineonToneMapping, ReinhardToneMapping, LinearToneMapping, GammaEncoding, RGBDEncoding, RGBM16Encoding, RGBM7Encoding, RGBEEncoding, sRGBEncoding, LinearEncoding, LogLuvEncoding } from '../../constants.js';
+import { NoToneMapping, AddOperation, MixOperation, MultiplyOperation, EquirectangularRefractionMapping, CubeRefractionMapping, EquirectangularReflectionMapping, CubeUVRefractionMapping, CubeUVReflectionMapping, CubeReflectionMapping, PCFSoftShadowMap, PCFShadowMap, VSMShadowMap, ACESFilmicToneMapping, CineonToneMapping, CustomToneMapping, ReinhardToneMapping, LinearToneMapping, GammaEncoding, RGBDEncoding, RGBM16Encoding, RGBM7Encoding, RGBEEncoding, sRGBEncoding, LinearEncoding, LogLuvEncoding } from '../../constants.js';
 
 let programIdCount = 0;
 
@@ -101,6 +101,10 @@ function getToneMappingFunction( functionName, toneMapping ) {
 
 		case ACESFilmicToneMapping:
 			toneMappingName = 'ACESFilmic';
+			break;
+
+		case CustomToneMapping:
+			toneMappingName = 'Custom';
 			break;
 
 		default:
@@ -380,7 +384,7 @@ function generateEnvMapBlendingDefine( parameters ) {
 
 }
 
-function WebGLProgram( renderer, cacheKey, parameters ) {
+function WebGLProgram( renderer, cacheKey, parameters, bindingStates ) {
 
 	const gl = renderer.getContext();
 
@@ -834,6 +838,8 @@ function WebGLProgram( renderer, cacheKey, parameters ) {
 	// free resource
 
 	this.destroy = function () {
+
+		bindingStates.releaseStatesOfProgram( this );
 
 		gl.deleteProgram( program );
 		this.program = undefined;

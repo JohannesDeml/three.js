@@ -7,7 +7,7 @@ import { WebGLProgram } from './WebGLProgram.js';
 import { ShaderLib } from '../shaders/ShaderLib.js';
 import { UniformsUtils } from '../shaders/UniformsUtils.js';
 
-function WebGLPrograms( renderer, extensions, capabilities ) {
+function WebGLPrograms( renderer, extensions, capabilities, bindingStates ) {
 
 	const programs = [];
 
@@ -289,7 +289,7 @@ function WebGLPrograms( renderer, extensions, capabilities ) {
 			rendererExtensionDrawBuffers: isWebGL2 || extensions.get( 'WEBGL_draw_buffers' ) !== null,
 			rendererExtensionShaderTextureLod: isWebGL2 || extensions.get( 'EXT_shader_texture_lod' ) !== null,
 
-			onBeforeCompile: material.onBeforeCompile
+			customProgramCacheKey: material.customProgramCacheKey()
 
 		};
 
@@ -336,7 +336,7 @@ function WebGLPrograms( renderer, extensions, capabilities ) {
 
 		}
 
-		array.push( parameters.onBeforeCompile.toString() );
+		array.push( parameters.customProgramCacheKey );
 
 		return array.join();
 
@@ -364,7 +364,7 @@ function WebGLPrograms( renderer, extensions, capabilities ) {
 
 		if ( program === undefined ) {
 
-			program = new WebGLProgram( renderer, cacheKey, parameters );
+			program = new WebGLProgram( renderer, cacheKey, parameters, bindingStates );
 			programs.push( program );
 
 		}

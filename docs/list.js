@@ -201,8 +201,10 @@ var list = {
 
 			"Lights": {
 				"AmbientLight": "api/en/lights/AmbientLight",
+				"AmbientLightProbe": "api/en/lights/AmbientLightProbe",
 				"DirectionalLight": "api/en/lights/DirectionalLight",
 				"HemisphereLight": "api/en/lights/HemisphereLight",
+				"HemisphereLightProbe": "api/en/lights/HemisphereLightProbe",
 				"Light": "api/en/lights/Light",
 				"LightProbe": "api/en/lights/LightProbe",
 				"PointLight": "api/en/lights/PointLight",
@@ -660,8 +662,10 @@ var list = {
 
 			"灯光": {
 				"AmbientLight": "api/zh/lights/AmbientLight",
+				"AmbientLightProbe": "api/zh/lights/AmbientLightProbe",
 				"DirectionalLight": "api/zh/lights/DirectionalLight",
 				"HemisphereLight": "api/zh/lights/HemisphereLight",
+				"HemisphereLightProbe": "api/zh/lights/HemisphereLightProbe",
 				"Light": "api/zh/lights/Light",
 				"LightProbe": "api/zh/lights/LightProbe",
 				"PointLight": "api/zh/lights/PointLight",

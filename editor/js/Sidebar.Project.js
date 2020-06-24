@@ -16,7 +16,6 @@ function SidebarProject( editor ) {
 	var strings = editor.strings;
 
 	var currentRenderer = null;
-	var currentPmremGenerator = null;
 
 	var container = new UISpan();
 
@@ -82,8 +81,7 @@ function SidebarProject( editor ) {
 	var antialiasRow = new UIRow();
 	var antialiasBoolean = new UIBoolean( config.getKey( 'project/renderer/antialias' ) ).onChange( function () {
 
-		config.setKey( 'project/renderer/antialias', this.getValue() );
-		updateRenderer();
+		createRenderer();
 
 	} );
 
@@ -97,8 +95,8 @@ function SidebarProject( editor ) {
 	var shadowsRow = new UIRow();
 	var shadowsBoolean = new UIBoolean( config.getKey( 'project/renderer/shadows' ) ).onChange( function () {
 
-		config.setKey( 'project/renderer/shadows', this.getValue() );
-		updateRenderer();
+		currentRenderer.shadowMap.enabled = this.getValue();
+		signals.rendererUpdated.dispatch();
 
 	} );
 
@@ -112,8 +110,8 @@ function SidebarProject( editor ) {
 		//	3: 'VSM'
 	} ).setWidth( '125px' ).onChange( function () {
 
-		config.setKey( 'project/renderer/shadowType', parseFloat( this.getValue() ) );
-		updateRenderer();
+		currentRenderer.shadowMap.type = parseFloat( this.getValue() );
+		signals.rendererUpdated.dispatch();
 
 	} );
 	shadowTypeSelect.setValue( config.getKey( 'project/renderer/shadowType' ) );
@@ -127,8 +125,8 @@ function SidebarProject( editor ) {
 	var physicallyCorrectLightsRow = new UIRow();
 	var physicallyCorrectLightsBoolean = new UIBoolean( config.getKey( 'project/renderer/physicallyCorrectLights' ) ).onChange( function () {
 
-		config.setKey( 'project/renderer/physicallyCorrectLights', this.getValue() );
-		updateRenderer();
+		currentRenderer.physicallyCorrectLights = this.getValue();
+		signals.rendererUpdated.dispatch();
 
 	} );
 
@@ -148,9 +146,9 @@ function SidebarProject( editor ) {
 		4: 'ACESFilmic'
 	} ).setWidth( '120px' ).onChange( function () {
 
-		var toneMapping = parseFloat( this.getValue() );
-		config.setKey( 'project/renderer/toneMapping', toneMapping );
-		updateRenderer();
+		currentRenderer.toneMapping = parseFloat( this.getValue() );
+		toneMappingExposure.setDisplay( currentRenderer.toneMapping === 0 ? 'none' : '' );
+		signals.rendererUpdated.dispatch();
 
 	} );
 	toneMappingSelect.setValue( config.getKey( 'project/renderer/toneMapping' ) );
@@ -159,12 +157,13 @@ function SidebarProject( editor ) {
 	toneMappingRow.add( toneMappingSelect );
 
 	var toneMappingExposure = new UINumber( config.getKey( 'project/renderer/toneMappingExposure' ) );
+	toneMappingExposure.setDisplay( toneMappingSelect.getValue() === '0' ? 'none' : '' );
 	toneMappingExposure.setWidth( '30px' ).setMarginLeft( '10px' );
 	toneMappingExposure.setRange( 0, 10 );
 	toneMappingExposure.onChange( function () {
 
-		config.setKey( 'project/renderer/toneMappingExposure', this.getValue() );
-		updateTonemapping();
+		currentRenderer.toneMappingExposure = this.getValue();
+		signals.rendererUpdated.dispatch();
 
 	} );
 	toneMappingRow.add( toneMappingExposure );
@@ -173,66 +172,21 @@ function SidebarProject( editor ) {
 
 	//
 
-	function updateRenderer() {
+	function createRenderer() {
 
-		createRenderer(
-			antialiasBoolean.getValue(),
-			shadowsBoolean.getValue(),
-			shadowTypeSelect.getValue(),
-			toneMappingSelect.getValue(),
-			toneMappingExposure.getValue(),
-			physicallyCorrectLightsBoolean.getValue()
-		);
-
-	}
-
-	function createRenderer( antialias, shadows, shadowType, toneMapping, toneMappingExposure, physicallyCorrectLights ) {
-
-		var parameters = { antialias: antialias };
-
-		if ( currentRenderer !== null ) {
-
-			currentRenderer.dispose();
-			currentPmremGenerator.dispose();
-
-		}
-
-		currentRenderer = new THREE.WebGLRenderer( parameters );
-		currentPmremGenerator = new THREE.PMREMGenerator( currentRenderer );
-		currentPmremGenerator.compileCubemapShader();
-		currentPmremGenerator.compileEquirectangularShader();
-
-		if ( shadows ) {
-
-			currentRenderer.shadowMap.enabled = true;
-			currentRenderer.shadowMap.type = parseFloat( shadowType );
-
-		}
-
-		currentRenderer.toneMapping = parseFloat( toneMapping );
-		currentRenderer.toneMappingExposure = toneMappingExposure;
-		currentRenderer.physicallyCorrectLights = physicallyCorrectLights;
-
-		signals.rendererChanged.dispatch( currentRenderer, currentPmremGenerator );
-
-	}
-
-	function updateTonemapping() {
-
+		currentRenderer = new THREE.WebGLRenderer( { antialias: antialiasBoolean.getValue() } );
+		currentRenderer.outputEncoding = THREE.sRGBEncoding;
+		currentRenderer.physicallyCorrectLights = physicallyCorrectLightsBoolean.getValue();
+		currentRenderer.shadowMap.enabled = shadowsBoolean.getValue();
+		currentRenderer.shadowMap.type = parseFloat( shadowTypeSelect.getValue() );
+		currentRenderer.toneMapping = parseFloat( toneMappingSelect.getValue() );
 		currentRenderer.toneMappingExposure = toneMappingExposure.getValue();
 
-		signals.rendererUpdated.dispatch();
+		signals.rendererChanged.dispatch( currentRenderer );
 
 	}
 
-	createRenderer(
-		config.getKey( 'project/renderer/antialias' ),
-		config.getKey( 'project/renderer/shadows' ),
-		config.getKey( 'project/renderer/shadowType' ),
-		config.getKey( 'project/renderer/toneMapping' ),
-		config.getKey( 'project/renderer/toneMappingExposure' ),
-		config.getKey( 'project/renderer/physicallyCorrectLights' )
-	 );
+	createRenderer();
 
 	// Materials
 
@@ -292,7 +246,45 @@ function SidebarProject( editor ) {
 
 	container.add( materials );
 
-	// events
+	// signals
+
+	signals.editorCleared.add( function () {
+
+		currentRenderer.physicallyCorrectLights = false;
+		currentRenderer.shadowMap.enabled = true;
+		currentRenderer.shadowMap.type = 1;
+		currentRenderer.toneMapping = 0;
+		currentRenderer.toneMappingExposure = 1;
+
+		refreshRendererUI();
+
+		signals.rendererUpdated.dispatch();
+
+	} );
+
+	function refreshRendererUI() {
+
+		physicallyCorrectLightsBoolean.setValue( currentRenderer.physicallyCorrectLights );
+		shadowsBoolean.setValue( currentRenderer.shadowMap.enabled );
+		shadowTypeSelect.setValue( currentRenderer.shadowMap.type );
+		toneMappingSelect.setValue( currentRenderer.toneMapping );
+		toneMappingExposure.setValue( currentRenderer.toneMappingExposure );
+		toneMappingExposure.setDisplay( currentRenderer.toneMapping === 0 ? 'none' : '' );
+
+	}
+
+	signals.rendererUpdated.add( function () {
+
+		config.setKey(
+			'project/renderer/antialias', antialiasBoolean.getValue(),
+			'project/renderer/physicallyCorrectLights', physicallyCorrectLightsBoolean.getValue(),
+			'project/renderer/shadows', shadowsBoolean.getValue(),
+			'project/renderer/shadowType', parseFloat( shadowTypeSelect.getValue() ),
+			'project/renderer/toneMapping', parseFloat( toneMappingSelect.getValue() ),
+			'project/renderer/toneMappingExposure', toneMappingExposure.getValue()
+		);
+
+	} );
 
 	signals.objectSelected.add( function ( object ) {
 
