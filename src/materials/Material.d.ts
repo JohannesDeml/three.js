@@ -1,7 +1,7 @@
 import { Plane } from './../math/Plane';
-import { Shader } from './../renderers/shaders/ShaderLib';
 import { EventDispatcher } from './../core/EventDispatcher';
 import { WebGLRenderer } from './../renderers/WebGLRenderer';
+import { Shader } from './../renderers/shaders/ShaderLib';
 import {
 	BlendingDstFactor,
 	BlendingEquation,
