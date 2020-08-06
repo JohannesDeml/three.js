@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<link type="text/css" rel="stylesheet" href="main.css">
+		<style>
+			body {
+				margin: 0;
+				overflow: hidden;
+			}
+
+			#css, #webgl {
+				width: 100%;
+				height: 100%;
+				position: absolute;
+				top: 0;
+				left: 0;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="info"><a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> css3d - sandbox orthographic</div>
+		<div id="css"></div>
+		<div id="webgl"></div>
+
+		<script type="module">
+
+			import * as THREE from '../build/three.module.js';
+
+			import { TrackballControls } from './jsm/controls/TrackballControls.js';
+			import { CSS3DRenderer, CSS3DObject } from './jsm/renderers/CSS3DRenderer.js';
+
+			var camera, webglscene, webglrenderer;
+			var cssscene, cssrenderer;
+			var controls;
+			var geometry, material, mesh;
+
+			var frustumSize = 10;
+
+			init();
+			animate();
+
+			function createImage ( url, x, y, z, ry ) {
+
+				var div = document.createElement( 'img' );
+				div.src = url;
+				div.style.width = '480px';
+				div.style.height = '360px';
+				div.style.backgroundColor = '#f00';
+
+				var cssobject = new CSS3DObject( div );
+				cssobject.position.set( x, y, z );
+				cssobject.rotation.y = ry;
+				cssobject.scale.set(0.01, 0.01, 0.01);
+
+				cssscene.add(cssobject);
+
+				var material = new THREE.MeshPhongMaterial({
+					opacity	: 0.0,
+					color	: new THREE.Color('black'),
+					blending: THREE.NoBlending,
+					side	: THREE.DoubleSide,
+				});
+
+				var geometry = new THREE.PlaneGeometry( 480, 360 );
+				var webglrepresentation = new THREE.Mesh( geometry, material );
+				webglrepresentation.position.copy( cssobject.position );
+				webglrepresentation.rotation.copy( cssobject.rotation );
+				webglrepresentation.scale.copy( cssobject.scale );
+				webglscene.add( webglrepresentation );
+			}
+
+			function init() {
+				var aspect = window.innerWidth / window.innerHeight;
+				camera = new THREE.OrthographicCamera( -frustumSize * aspect / 2, frustumSize * aspect / 2, frustumSize / 2, -frustumSize / 2, 1, 100 );
+				camera.position.z = 10;
+
+				webglscene = new THREE.Scene();
+
+				webglrenderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+				webglrenderer.setClearColor( 0x000000, 0 );
+				webglrenderer.setSize( window.innerWidth, window.innerHeight );
+				document.querySelector('#webgl').appendChild( webglrenderer.domElement );
+
+				cssscene = new THREE.Scene();
+				cssrenderer = new CSS3DRenderer();
+				cssrenderer.setSize( window.innerWidth, window.innerHeight );
+				document.querySelector('#css').appendChild( cssrenderer.domElement );
+
+
+				geometry = new THREE.BoxGeometry( 1, 1, 1 );
+				material = new THREE.MeshNormalMaterial();
+
+				mesh = new THREE.Mesh( geometry, material );
+				webglscene.add( mesh );
+
+				createImage( './textures/floors/FloorsCheckerboard_S_Diffuse.jpg', 0, 0, -2, 0 );
+
+				var backPlaneGeometry = new THREE.PlaneGeometry(20, 10)
+
+				var backPlane = new THREE.Mesh(backPlaneGeometry, material);
+				backPlane.position.set(0,0,-5);
+				webglscene.add(backPlane);
+
+				controls = new TrackballControls( camera, webglrenderer.domElement );
+				controls.rotateSpeed = 4;
+
+				window.addEventListener( 'resize', onWindowResize, false );
+			}
+
+			function animate() {
+
+				requestAnimationFrame( animate );
+
+				mesh.rotation.x += 0.01;
+				mesh.rotation.y += 0.02;
+				controls.update();
+				webglrenderer.render( webglscene, camera );
+				cssrenderer.render( cssscene, camera );
+
+			}
+
+			function onWindowResize() {
+
+				var aspect = window.innerWidth / window.innerHeight;
+				camera.left = -frustumSize * aspect / 2;
+				camera.right = frustumSize * aspect / 2;
+				camera.top = frustumSize / 2;
+				camera.bottom = -frustumSize / 2;
+				camera.updateProjectionMatrix();
+
+				webglrenderer.setSize( window.innerWidth, window.innerHeight );
+				cssrenderer.setSize( window.innerWidth, window.innerHeight );
+
+			}
+
+		</script>
+	</body>
+</html>
