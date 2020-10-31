@@ -1,22 +1,3 @@
-
-# Help
-The issues section is for bug reports and feature requests only. If you need help, please use the [forum](http://discourse.threejs.org/) or [stackoverflow](http://stackoverflow.com/questions/tagged/three.js).
-
-# Bugs
-#### Before reporting a bug
-
-1. Search issue tracker for similar issues.
-2. Try the latest dev branch version of three.js.
-3. Refer to the [Migration Guide](https://github.com/mrdoob/three.js/wiki/Migration) when upgrading to the dev version.
-
-#### How to report a bug
-
-1. Specify the revision number of the three.js library where the bug occurred.
-2. Specify your browser version, operating system, and graphics card. (for example, Chrome 23.0.1271.95, Windows 7, Nvidia Quadro 2000M)
-3. Describe the problem in detail. Explain what happened, and what you expected would happen.
-4. Provide a small test-case (http://jsfiddle.net). [Here is a fiddle](https://jsfiddle.net/3foLr7sn/) you can edit that runs the current version. [And here is a fiddle](https://jsfiddle.net/qgu17w5o/) that uses the dev branch. If a test-case is not possible, provide a link to a live version of your application.
-5. If helpful, include a screenshot. Annotate the screenshot for clarity.
-
 # Contribution
 #### Introduction
 
@@ -56,13 +37,6 @@ The next most important script runs all the appropriate testing.
 The linting is there to keep a consistent code-style across the all of the code and the testing is
 there to help catch bugs and check that the code behaves as expected. It is important that
 neither of these steps comes up with any errors due to your changes.
-* If you’d like the linter to fix any errors that it can change, make the following addition to the “test-lint” script.
-        
-        {
-        ...
-        "test-lint": "eslint src --ext js --ext ts --fix && tsc -p utils/build/tsconfig.lint.json"
-        ...
-        }
 
 If you’d like to make a minified version of the build files i.e. ‘build/three.min.js’ run:
         

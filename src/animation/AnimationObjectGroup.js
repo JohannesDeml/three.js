@@ -281,7 +281,12 @@ Object.assign( AnimationObjectGroup.prototype, {
 					const lastIndex = -- nObjects,
 						lastObject = objects[ lastIndex ];
 
-					indicesByUUID[ lastObject.uuid ] = index;
+					if ( lastIndex > 0 ) {
+
+						indicesByUUID[ lastObject.uuid ] = index;
+
+					}
+
 					objects[ index ] = lastObject;
 					objects.pop();
 
@@ -313,9 +318,9 @@ Object.assign( AnimationObjectGroup.prototype, {
 		// returns an array of bindings for the given path that is changed
 		// according to the contained objects in the group
 
-		let indicesByPath = this._bindingsIndicesByPath,
-			index = indicesByPath[ path ],
-			bindings = this._bindings;
+		const indicesByPath = this._bindingsIndicesByPath;
+		let index = indicesByPath[ path ];
+		const bindings = this._bindings;
 
 		if ( index !== undefined ) return bindings[ index ];
 
